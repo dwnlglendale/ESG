@@ -1,0 +1,295 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model BranchDetails
+
+@{
+    ViewData["Title"] = "Update Details";
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Footprint Details</h1>
+        </div>
+
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post" enctype="multipart/form-data">
+                    <input hidden asp-for="CarbornFootprint" />
+
+                    <div class="p-4">
+                        <h1 class="p-2">Comments</h1>
+                    </div>
+                    <fieldset disabled>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <textarea class="form-control" asp-for="Comment" required step="0.01" min="0" placeholder="Add Comments here..."></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="row">
+                        <div class="p-4">
+                            <h1 class="p-2">Branch Information</h1>
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="PermanentStaffNumber">Number of Permanent Staff<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="PermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                        </div>
+
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="NonPermanentStaffNumber">Number of Non Permanent Staff<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="NonPermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                        </div>
+                        <div class="row">
+                            <div class="p-4">
+                                <h1 class="p-2">Electricity</h1>
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="ElectricityConsumed">Electricity Consumed (IN KwH)<span class="text-danger"> *</span></label>
+                                <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="ElectricityConsumed" required step="0.01" min="0" placeholder="Enter amount consumed">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="ElectricityAmount">Amount Paid(GHS)<span class="text-danger"> *</span></label>
+                                <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="ElectricityAmount" required step="0.01" min="0" placeholder="Enter amount paid">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class=row>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="MeterType">Meter Type</label>
+                            <select class="form-control" asp-for="MeterType">
+                                <option value="" disabled>--- Select from the options below ---</option>
+                                <option value="Postpaid">Postpaid</option>
+                                <option value="PrePaid">Prepaid</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="p-4">
+                        <h1 class="p-2">Fuel Consumption - Generator/Plant</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="AmountPaidForDieselGenerator">Amount Paid for Diesel To Power Generator/Plant<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="required form-control muted" asp-for="AmountPaidForDieselGenerator" required step="0.01" min="0" placeholder="Enter amount paid for diesel">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfDieselPurchased">Quantity of Diesel Bought/Supplied (Litres)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDieselPurchased" required step="0.01" min="0" placeholder="Enter quantity of diesel purchased">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label for="electricityConsumed" asp-for="QuantityOfDieselConsumed">Total Quantity of Diesel Consumed (In Litres)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDieselConsumed" required step="0.01" min="0" placeholder="Enter quantity of diesel consumed">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfDieselLeft">Quantity of Diesel Left (Litres) As At Month Ending<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDieselLeft" required step="0.01" min="0" placeholder="Enter quantity of diesel left">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="TotalRuningGeneratorHours">Total Running Hours Of The Generator/Plant<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="TotalRuningGeneratorHours" required placeholder="Enter number of non permanent staff">
+                        </div>
+                    </div>
+                    @* <div class="p-4">
+                        <h1 class="p-2">Fuel Consumption - Generator/Plant</h1>
+                        </div>
+                        <div class="row">
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="AmountPaidForDieselGenerator">Amount Paid for Diesel To Power Generator/Plant<span class="text-danger"> *</span></label>
+                        <input type="number" class="required form-control muted" asp-for="AmountPaidForDieselGenerator" required step="0.01" min="0" placeholder="Enter amount paid for diesel">
+                        </div>
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="QuantityOfDieselPurchased">Quantity of Diesel Bought/Supplied (Litres)<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="QuantityOfDieselPurchased" required step="0.01" min="0" placeholder="Enter quantity of diesel purchased">
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col form-group p-4">
+                        <label for="electricityConsumed" asp-for="QuantityOfDieselConsumed">Total Quantity of Diesel Consumed (In Litres)<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="QuantityOfDieselConsumed" required step="0.01" min="0" placeholder="Enter quantity of diesel consumed">
+                        </div>
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="QuantityOfDieselLeft">Quantity of Diesel Left (Litres) As At Month Ending<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="QuantityOfDieselLeft" required step="0.01" min="0" placeholder="Enter quantity of diesel left">
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-6 form-group p-4">
+                        <label class="form-label" asp-for="TotalRuningGeneratorHours">Total Running Hours Of The Generator/Plant<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="TotalRuningGeneratorHours" required placeholder="Enter number of non permanent staff">
+                        </div>
+                        </div>
+                        <div class="p-4">
+                        <h1 class="p-2">Fuel Consumption - Branch Vehicle(s)</h1>
+                        </div>
+                        <div class="row" id="VehicleInfo">
+                        <div class="col form-group p-4">
+
+                        <label class="form-label" asp-for="NumberOfVehicles">Number of Vehicles/Pool Cars Used By Branch<span class="text-danger"> *</span></label>
+                        <input type="number" class="required form-control muted" asp-for="NumberOfVehicles" required placeholder="Enter number of vehicles/pool cars used">
+                        </div>
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="VehicleUsers">Number of Staff using Branch Vehicles/ Pool Cars<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="VehicleUsers" placeholder="Enter number of staff using branch vehicles">
+                        </div>
+                        </div>
+                        <div class="row" id="Info">
+                        <div class="col form-group p-4" id="ShareInfo">
+                        <label class="form-label" asp-for="VehicleBranchShare" required>Are the Vehicles Shared With Other Branches<span class="text-danger"> *</span></label>
+                        <select class="form-control" asp-for="VehicleBranchShare">
+                        <option value="">--- Select an option available ----</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                        </select>
+                        </div>
+                        <div class="col form-group p-4" id="TypeOfFuel">
+                        <label class="form-label" asp-for="FuelType">Type of Fuel Used By Branch Vehicles<span class="text-danger"> *</span></label>
+                        <select class="form-control" asp-for="FuelType">
+                        <option value="">--- Select an option available ---</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Both">Both</option>
+                        </select>
+                        </div>
+                        </div>
+                        <div class="row" id="VehicleBranchInfo">
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="VehicleBranchList">If YES, List the Name of the Branches<span class="text-danger"> *</span></label>
+                        <select class="form-control" asp-for="VehicleBranchList">
+                        <option value="Kokomlemle">Kokomlemle</option>
+                        <option value="Shiashie">Shiashie</option>
+                        <option value="Labone">Labone</option>
+                        </select>
+                        </div>
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="HoursUsedByDifferentBranch">If YES, How Many Hours Was The Car Used<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="HoursUsedByDifferentBranch" placeholder="Enter number of hours car was used">
+                        </div>
+                        </div>
+
+                        <div class="row" id="FuelInfo">
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="DieselCostPerLitre">Cost of Petrol Per Litre (GHS)</label>
+                        <input type="number" class="form-control" asp-for="DieselCostPerLitre" required step="0.01" min="0" placeholder="Enter amount of petrol per litre">
+                        </div>
+
+                        <div class="col form-group p-4">
+                        <label class="form-label" asp-for="PetrolCostPerLitre">Cost of Diesel Per Litre (GHS)</label>
+                        <input type="number" class="form-control" asp-for="PetrolCostPerLitre" requires step="0.01" min="0" placeholder="Enter amount of diesel per litre">
+                        </div>
+                        </div>
+                        <div class="row" id="FuelCost">
+                        <div class="col form-group p-4" id="DieselCost">
+                        <label class="form-label" asp-for="AmountPaidForDiesel">Amount Paid to Fuel Branch Vehicles using Diesel<span class="text-danger"> *</span></label>
+                        <input type="number" class="form-control" asp-for="AmountPaidForDiesel" required step="0.01" min="0" placeholder="Enter amount paid for diesel vehicles">
+                        </div>
+
+                        <div class="col form-group p-4" id="PetrolCost">
+                        <label class="form-label" asp-for="AmountPaidForPetrol">Amount Paid to Fuel Branch Vehicles using Petrol</label>
+                        <input type="number" class="form-control" asp-for="AmountPaidForPetrol" required step="0.01" min="0" placeholder="Enter amount paid for petrol vehicles">
+                        </div>
+                        </div>*@
+                    <div class="p-4">
+                        <h1 class="p-2">Water (Drinkable/Regular)</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfDrinkableWaterConsumed">Quantity of Water Consumed in Litres (Drinkable)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter water consumed">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfRegularWaterConsumed">Quantity of Water Consumed in Litres (Regular)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid">
+                        </div>
+                    </div>
+                    <div class=row>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="CostOfDrinkableWaterConsumed">Amount Paid For Water Consumed (Drinkable) <span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for drinkable water" />
+                        </div>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="CostOfRegularWaterConsumed">Amount Paid For Water Consumed (Regular) <span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for regular water" />
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h1 class="p-2">Paper Consumption</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="NumberOfPaperUsed">Number of Papers Used (In Reams)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="NumberOfPaperUsed" required placeholder="Enter reams of paper used">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="CostOfPaperUsed">Cost of Paper Used<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfPaperUsed" required step="0.01" min="0" placeholder="Enter amount paid">
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h1 class="p-2">Waste (Trash)</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="MeansOfDisposal">Means of Waste Disposal<span class="text-danger"> *</span></label>
+                            <select class="form-control" asp-for="MeansOfDisposal">
+                                <option disabled selected value="">--- Select from the options below ---</option>
+                                <option value="Waste Company">Collection by Waste Disposal Company</option>
+                                <option value="Landfills">Landfills</option>
+                                <option value="Incineration">Incineration</option>
+                            </select>
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="CostOfDisposal">Amount Paid to Waste Company<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfDisposal" required step="0.01" min="0" placeholder="Enter amount paid to waste company">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfDisposal">Quantity of Waste Created and Disposed (in KG)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDisposal" required step="0.01" min="0" placeholder="Enter quantity of waste produced">
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    
+
+                    <div class="col-6 form-group p-4">
+                        <label class="form-label">Add Receipts for All Footprint</label>
+                        <input class="form-control" type="file" name="attachments[]" placeholder="Select attachment" multiple />
+                    </div>
+                    <br />
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-dark" onclick="window.history.back()">Back</a>
+                        <button type="submit" class="btn btn-success p-4" asp-controller="Footprint" asp-action="update" asp-route-id="@Model.CarbornFootprint" asp-route-status="update">Update Form</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+            function goBack() {
+          window.history.go(-1);
+        }
+    </script>
+</div>

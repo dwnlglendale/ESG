@@ -1,0 +1,72 @@
+﻿@model CarbonFootprint1.Models.BranchDetails
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+@{
+    ViewData["Title"] = "Branch Info";
+}
+<div class="p-4">
+    <h1 class="p-2" style="font-size: 30px; text-align: center;">Branch Information</h1>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8 p-3">
+            </div>
+
+            <div class="card-body pt-0">
+                <form method="post" id="BranchInfoForm" asp-controller="Footprint" asp-action="branchInfo">
+                  
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="PermanentStaffNumber">Number of Permanent Staff<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" class="form-control" asp-for="PermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                        </div>
+
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="NonPermanentStaffNumber">Number of Non Permanent Staff<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'" class="form-control" asp-for="NonPermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="ReportMonth">Enter Report Month<span class="text-danger"> *</span></label>
+                            <input type="month" class="form-control" asp-for="ReportMonth" required placeholder="Enter which month the report is for">
+                        </div>
+                        
+                            <div class="col form-group p-4">
+                                <fieldset disabled>
+                                <label class="form-label" asp-for="BranchName">Branch Name</label>
+                                <input type="text" class="form-control" asp-for="BranchName" required placeholder="@HttpContextAccessor.HttpContext?.Session.GetString("BranchName")">
+                                </fieldset>
+                            </div>
+                        
+                            
+                    </div>
+
+                    <button type="submit" class="btn btn-danger p-4">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/plugins/global/plugins.bundle.js"></script>
+
+<script type="text/javascript">
+    new tempusDominus.TempusDominus(document.getElementById("kt_td_picker_button"), {
+            display: {
+            viewMode: "clock",
+            components: {
+                decades: false,
+                year: true,
+                month: true,
+                date: false,
+                hours: true,
+                minutes: true,
+                seconds: false
+            }
+        //put your config here
+    });
+</script>

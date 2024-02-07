@@ -1,0 +1,73 @@
+﻿@if (TempData["success"] != null)
+{
+	<script src="~/plugins/global/plugins.bundle.js"></script>
+	<script src="~/js/scripts.bundle.js"></script>
+	<script type="text/javascript">
+		Swal.fire({
+			icon: 'success',
+			title: 'Successful',
+			text: '@TempData["success"]',
+			confirmButtonText: "Ok, got it!",
+			customClass: {
+				confirmButton: "btn btn-danger"
+			}
+		}).then((value) => {
+			console.log("success");
+			window.location.reload();
+		});
+	</script>
+}
+
+@if (TempData["error"] != null)
+{
+	<script src="~/plugins/global/plugins.bundle.js"></script>
+	<script src="~/js/scripts.bundle.js"></script>
+	<script type="text/javascript">
+		Swal.fire({
+			icon: 'error',
+			title: 'Ooops..',
+			text: '@TempData["error"]',
+			confirmButtonText: "Ok, got it!",
+			customClass: {
+				confirmButton: "btn btn-danger"
+			}
+		}).then((value) => {
+			console.log("error");
+			window.location.reload();
+		});;
+	</script>
+}
+
+@if (TempData["info"] != null)
+{
+	<script src="~/plugins/global/plugins.bundle.js"></script>
+	<script src="~/js/scripts.bundle.js"></script>
+	<script type="text/javascript">
+		Swal.fire({
+			icon: 'info',
+			title: 'Ooops..',
+			text: '@TempData["info"]',
+			confirmButtonText: "Ok, got it!",
+			customClass: {
+				confirmButton: "btn btn-danger"
+			}
+		});
+	</script>
+}
+
+@if (TempData["warning"] != null)
+{
+	<script src="~/plugins/global/plugins.bundle.js"></script>
+	<script src="~/js/scripts.bundle.js"></script>
+	<script type="text/javascript">
+		Swal.fire({
+			icon: 'warning',
+			title: 'Ooops..',
+			text: '@TempData["warning"]',
+			confirmButtonText: "Ok, got it!",
+			customClass: {
+				confirmButton: "btn btn-danger"
+			}
+		});
+	</script>
+}

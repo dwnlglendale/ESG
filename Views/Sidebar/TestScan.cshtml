@@ -1,0 +1,33 @@
+﻿
+<input type="button" value="Scan" onclick="AcquireImage();" />
+    <div id="dwtcontrolContainer"></div>
+
+<script type="text/javascript">
+        var DWObject;
+
+        function Dynamsoft_OnReady() {
+            DWObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
+        }
+
+        function AcquireImage() {
+            if (DWObject) {
+                DWObject.SelectSourceAsync()
+                .then(function () {
+                    return DWObject.AcquireImageAsync({
+                        IfDisableSourceAfterAcquire: true,
+                    });
+                })
+                .then(function (result) {
+                    console.log(result);
+                })
+                .catch(function (exp) {
+                    console.error(exp.message);
+                })
+                .finally(function () {
+                    DWObject.CloseSourceAsync().catch(function (e) {
+                        console.error(e);
+                    });
+                });
+            }
+        }
+    </script>

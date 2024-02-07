@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Create User";
+}
+
+@model CarbonFootprint1.Models.ViewModels.UserVM
+
+<div class="p-4">
+    <h1 class="p-2">Create User</h1>
+</div>
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post">
+                    <div class="row">
+                        <div class="mb-10 row">
+                            @* <div class="col-md-6">
+                                <label class="form-label required" asp-for="UserInput.UserName">Username</label>
+                                <input asp-for="UserInput.UserName" class="form-control form-control-lg" />
+                                </div>*@
+                            <div class="col-md-6">
+                                <label class="form-label required" asp-for="UserInput.UserName">Username</label>
+                                <input asp-for="UserInput.UserName" class="form-control form-control-lg"
+                                       pattern="[A-Za-z.\\-]+"
+                                       title="Please enter only letters, hypen(-) and dots (.)"
+                                       required placeholder="Enter username" />
+                            </div>
+
+                            <div class="col-md-6" id="BDSelect">
+                                <label class="form-label required" asp-for="UserInput.BDSelection">Branch / Department</label>
+                                <select class="form-select form-select-lg" asp-for="UserInput.BDSelection" data-control="select2">
+                                    <option disabled selected>-- Select Branch/Department --</option>
+                                    <option value="Branch">Branch</option>
+                                    <option value="Department">Department</option>
+                                </select>
+                            </div>
+                                
+                        </div>
+                        <div class="pt-1 row">
+                            <div class="col-md-6" id="BranchBlk">
+                                <label class="form-label required" asp-for="UserInput.Branch"></label>
+                                <select asp-for="UserInput.Branch" class="form-select form-select-lg" data-control="select2" asp-items="@ViewBag.branchName">
+                                    <option disabled selected>-- Select Branch --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="DepartmentBlk">
+                                <label class="form-label" asp-for="UserInput.Department">Department</label>
+                                <select asp-for="UserInput.Department" class="form-select form-select-lg" data-control="select2" asp-items="@ViewBag.departmentName">
+                                    <option disabled selected>-- Select Department --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" asp-for="UserInput.UserPosition">User Role</label>
+                                <select asp-for="UserInput.UserPosition" class="form-select form-select-lg" data-control="select2" asp-items="@ViewBag.positions">
+                                    <option disabled selected>-- Select Roles --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-3 row">
+                        <div class="col-md-6">
+                            <label class="form-label mb-3" asp-for="UserInput.Status">Status</label>
+                            <select asp-for="UserInput.Status" class="form-select form-select-lg" data-control="select2" data-hide-search="true">
+                                <option value="" disabled selected>Choose option</option>
+                                <option value="Active">Active</option>
+                                <option value="Disable">Disable</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-dark" onclick="window.history.back()">Back</a>
+                        <button style="width:150px" type="submit" class="btn btn-danger p-4">Add</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        function goBack() {
+      window.history.go(-1);
+    }
+</script>

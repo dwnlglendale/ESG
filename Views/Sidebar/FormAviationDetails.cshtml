@@ -1,0 +1,67 @@
+﻿@model CarbonFootprint1.Models.AirTravel
+
+@{
+    ViewData["Title"] = "Air Travel";
+}
+<div class="p-4">
+    <h1 class="p-2" style="font-size: 30px; text-align: center;">Air Travel - P&T </h1>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post" id="AirTravel" asp-controller="Footprint" asp-action="airtravel">
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="ReportMonth">Select Report Month<span class="text-danger"> *</span></label>
+                            <input type="month" class="required form-control muted" asp-for="ReportMonth" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="DomesticTravelCount">Number of Domestic Travels<span class="text-danger"> *</span></label>
+                            <input type="number" class="required form-control muted" asp-for="DomesticTravelCount" required step="0.01" min="0" placeholder="Enter number of domestic flights">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="InternationalTravelCount">Number of International Travels<span class="text-danger"> *</span></label>
+                            <input type="number" class="form-control" asp-for="InternationalTravelCount" required step="0.01" min="0" placeholder="Enter number of international flights">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="DomesticTravelCost">Total Cost of Domestic Flight (GHC)<span class="text-danger"> *</span></label>
+                            <input type="number" class="form-control" asp-for="DomesticTravelCost" required step="0.01" min="0" placeholder="Enter amount paid for travel">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="InternationalTravelCost">Total Cost of International Flight (GHC)<span class="text-danger"> *</span></label>
+                            <input type="number" class="form-control" asp-for="InternationalTravelCost" required step="0.01" min="0" placeholder="Enter amount paid for travel">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="DomDistanceTravelled">Total Air Miles Travelled Domesically<span class="text-danger"> *</span></label>
+                            <input type="number" class="form-control" asp-for="DomDistanceTravelled" required placeholder="Enter distance of flight (miles)">
+                        </div>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="IntDistanceTravelled">Total Air Miles Travelled Internationally<span class="text-danger"> *</span></label>
+                            <input type="number" class="form-control" asp-for="IntDistanceTravelled" required placeholder="Enter distance of flight (miles)">
+                        </div>
+                    </div>
+                    <div class="p-2 row">
+                        <div class="col-6"><button type="submit" class="btn btn-danger p-4">Submit</button></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+

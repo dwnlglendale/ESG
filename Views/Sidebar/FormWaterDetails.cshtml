@@ -1,0 +1,57 @@
+﻿@model CarbonFootprint1.Models.BranchDetails
+@{
+    ViewData["Title"] = "Water Details";
+}
+
+<div class="p-4">
+    <h1 class="p-2" style="font-size: 30px; text-align: center;">Water (Drinkable + Regular)</h1>
+</div>
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post" asp-controller="Footprint" asp-action="water" enctype="multipart/form-data">
+                    <input hidden asp-for="CarbornFootprint" />
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfDrinkableWaterConsumed">Quantity of Water Consumed in Litres (Drinkable)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter quantity of water consumed">
+                        </div>
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="QuantityOfRegularWaterConsumed">Quantity of Water Consumed in Litres (Regular)<span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="QuantityOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter quantity of water consumed">
+                        </div>
+                    </div>
+                    <div class=row>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="CostOfDrinkableWaterConsumed">Amount Paid For Water Consumed (Drinkable) <span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for drinkable water" />
+                        </div>
+                        <div class="col-6 form-group p-4">
+                            <label class="form-label" asp-for="CostOfRegularWaterConsumed">Amount Paid For Water Consumed (Regular) <span class="text-danger"> *</span></label>
+                            <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for regular water" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-6 form-group p-4">
+                        <label class="form-label">Add Receipts for Water</label>
+                        <input class="form-control" type="file" name="attachments[]" required placeholder="Select attachment" multiple />
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-dark" onclick="window.history.back()">Back</a>
+                        <button type="submit" class="btn btn-danger p-4">Next</button>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+

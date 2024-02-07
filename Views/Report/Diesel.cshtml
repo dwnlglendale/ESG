@@ -1,0 +1,114 @@
+﻿@model IEnumerable<BranchDetails>
+@{
+    ViewData["Title"] = "Diesel Report";
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Diesel Report</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+           
+
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="diesel_report">
+                    <thead style="white-space:nowrap">
+                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                            <th class="min-w-125px">Branch Name</th>
+                            <th class="min-w-125px">Total Staff</th>
+                            <th class="min-w-125px">Amount (GHC)</th>
+                            <th class="min-w-125px">Quantiy Purchased (litres)</th>
+                            <th class="min-w-125px">Quantiy Consumed (litres)</th>
+                            <th class="min-w-125px">Quantiy Left (litres)</th>
+                            <th class="min-w-125px">CO2 Produced Per Staff</th>
+                            @* <th class="min-w-125px">Quantiy Left (litres)</th>
+                                <th class="min-w-125px">CO2 Emission (Tons)</th>*@
+                            <th class="min-w-125px">Report Month</th>
+
+                        </tr>
+                    </thead>
+                    <tbody style="white-space:nowrap" class="fw-semibold text-gray-600">
+                        @foreach (var formStatus in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <p class="text-gray-800 text-hover-danger mb-1">@formStatus.BranchName</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-800 text-hover-danger mb-1">@formStatus.TotalStaffNumber</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.AmountPaidForDieselGenerator</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.QuantityOfDieselPurchased</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.QuantityOfDieselConsumed</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.QuantityOfDieselLeft</p>
+                                </td>
+                                <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.DieselGeneratorCO2Emission</p>
+                                </td>
+                                @* <td>
+                                    <p align="center" class="text-gray-600 text-hover-danger mb-1">@formStatus.DieselQuantityConsumed</p>
+                                    </td>
+                                    <td data-filter="mastercard">
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.DieselVehicleCO2Emission</p>
+                                    </td>*@
+                                <td>
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.ReportMonth.ToString("MMMM yyyy")</p>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/plugins/global/plugins.bundle.js"></script>
+<script src="~/plugins/custom/datatables/datatables.bundle.js"></script>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+        var table = $('#diesel_report').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ],
+            scrollX: true,
+            scrollY: 400,
+        });
+
+        // Add a date range filter to the table
+        $('#date_filter').on('click', function() {
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+            table.columns(8).search('^(' + start_date + '|' + end_date + ')$', true, false).draw();
+        });
+    });
+</script>
+

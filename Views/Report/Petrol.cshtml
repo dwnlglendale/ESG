@@ -1,0 +1,79 @@
+﻿@model IEnumerable<BranchDetails>
+@{
+    ViewData["Title"] = "Petrol Report";
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+           <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0" >Petrol Report</h1>
+        </div>
+     
+    </div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                @*<table class="table align-middle table-row-dashed fs-6 gy-5" id="petrol_report">
+                    <thead style="white-space:nowrap">
+                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                            <th class="min-w-125px">Branch Name</th>
+                            <th class="min-w-125px">Amount (GHC)</th>
+                            <th class="min-w-125px">Quantiy Consumed (litres)</th>
+                            <th class="min-w-125px">CO2 Emission (Tons)</th>
+                            <th class="min-w-125px">Month Added</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody class="fw-semibold text-gray-600">
+                        @foreach (var formStatus in Model)
+                        {
+                             <tr>
+                                <td>
+                                    <p class="text-gray-800 text-hover-danger mb-1">@formStatus.BranchName</p>
+                                </td>
+                                <td>
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.AmountPaidForPetrol</p>
+                                </td>
+                                <td>
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.PetrolQuantityConsumed</p>
+                                </td>
+                                <td data-filter="mastercard">
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.PetrolCO2Emission</p>
+                                </td>
+                                 <td>
+                                    <p class="text-gray-600 text-hover-danger mb-1">@formStatus.CreatedDate.ToString("MMMM")</p>
+                                </td>
+                               
+                            </tr>
+                        }
+                    </tbody>
+                    </table>*@
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/plugins/global/plugins.bundle.js"></script>
+<script src="~/plugins/custom/datatables/datatables.bundle.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    $('#petrol_report').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    } );
+} );
+</script>

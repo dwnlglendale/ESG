@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Edit Role";
+}
+
+@model CarbonFootprint1.Models.ViewModels.PositionVM
+
+<div class="p-4">
+    <h1 class="p-2">Edit Role</h1>
+</div>
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                @Html.AntiForgeryToken()
+                <form method="post">
+                    <input hidden asp-for="PositionInput.Position_ID" />
+                    <div class="row">
+
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="PositionInput.Position_Name">Position Name<span class="text-danger"> *</span></label>
+                            <input type="text" onpaste="return false;" oncopy="return false;"
+                                   pattern="[A-Za-z]+"
+                                   title="Please enter only letters"
+                                   class="form-control" asp-for="PositionInput.Position_Name" required placeholder="Enter position name">
+                            <span asp-validation-for="PositionInput.Position_Name" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="PositionInput.Position_Description">Description<span class="text-danger"> *</span></label>
+                            <input type="text" onpaste="return false;" oncopy="return false;"
+                                   pattern="[A-Za-z\s]+"
+                                   title="Please enter only letters"
+                                   class="form-control" asp-for="PositionInput.Position_Description" required placeholder="Enter description here">
+                            <span asp-validation-for="PositionInput.Position_Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-md-12">
+                        <label class="form-label mb-5">Assign Rights</label>
+                        @for (int i = 0; i < Model.RoleList.Count; i++)
+                        {
+                            <span class="form-check form-check-custom form-check-danger form-check-solid mb-4">
+                                <input type="hidden" class="form-check-input" asp-for="RoleList[i].Value" />
+                                <input type="hidden" class="form-check-input" asp-for="RoleList[i].Text" />
+                                <input type="checkbox" class="form-check-input" asp-for="RoleList[i].Selected" id="@Model.RoleList[i].Text" />
+                                <label class="form-check-label" for="@Model.RoleList[i].Text">@Model.RoleList[i].Text</label>
+                            </span>
+                        }
+                    </div>
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-dark" onclick="window.history.back()">Back</a>
+                        <button style="width:150px" type="submit" class="btn btn-danger p-4">Update</button>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        function goBack() {
+      window.history.go(-1);
+    }
+</script>

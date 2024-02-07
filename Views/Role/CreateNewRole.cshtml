@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Create Role";
+}
+
+@model CarbonFootprint1.Models.ViewModels.RoleVM 
+
+<div class="p-4">
+    <h1 class="p-2">Create Role</h1>
+</div>
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post" >
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="RoleInput.Name">Role Name<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" asp-for="RoleInput.Name" required placeholder="Enter role name">
+                        </div>
+
+                        <div class="col form-group p-4">
+                            <label class="form-label" asp-for="RoleInput.Description">Description<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" asp-for="RoleInput.Description" required placeholder="Enter description here">
+                        </div>
+                    </div>
+
+                    <button style="width:150px" type="submit" class="btn btn-danger p-4">Add</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+

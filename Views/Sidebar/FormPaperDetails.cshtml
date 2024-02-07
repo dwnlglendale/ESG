@@ -1,0 +1,49 @@
+﻿@model CarbonFootprint1.Models.BranchDetails
+@{
+    ViewData["Title"] = "Paper Details";
+}
+
+<div class="p-4">
+    <h1 class="p-2 align-content-center">Paper Consumption</h1>
+</div>
+
+<div id="kt_app_content_container" class="app-container container-xxl">
+    <div class="card">
+        <div class="mb-8">
+        </div>
+        <div class="card-body pt-0">
+            <form method="post" asp-controller="Footprint" asp-action="paper" enctype="multipart/form-data">
+                <input hidden asp-for="CarbornFootprint" />
+                <div class="row">
+                    <div class="col form-group p-4">
+                        <label class="form-label" asp-for="NumberOfPaperUsed">Number of Papers Used (In Reams)<span class="text-danger"> *</span></label>
+                        <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="NumberOfPaperUsed" required placeholder="Enter reams of paper used">
+                    </div>
+                    <div class="col form-group p-4">
+                        <label class="form-label" asp-for="CostOfPaperUsed">Cost of Paper Used (GHC)<span class="text-danger"> *</span></label>
+                        <input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" asp-for="CostOfPaperUsed" required step="0.01" min="0" placeholder="Enter amount paid">
+                    </div>
+                </div>
+                   <br />
+                <div class="col-6 form-group p-4">
+                    <label class="form-label">Add Receipts for Paper</label>
+                    <input class="form-control" type="file" name="attachments[]" required placeholder="Select attachment" multiple />
+                </div>
+                <br />
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-dark" onclick="window.history.back()">Back</a>
+                    <button type="submit" class="btn btn-danger p-4">Next</button>
+                </div>
+
+             
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+           function goBack() {
+      window.history.go(-1);
+    }
+</script>

@@ -1,0 +1,2064 @@
+USE [glManager]
+GO
+/****** Object:  Table [dbo].[GLRequest]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLRequest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[GLTypeId] [int] NULL,
+	[GLAccountName] [nvarchar](100) NULL,
+	[GLPurpose] [nvarchar](500) NULL,
+	[GLEntryType] [int] NULL,
+	[GLExpectedClosingBalType] [int] NULL,
+	[HodName] [nvarchar](100) NULL,
+	[HodMail] [nvarchar](50) NULL,
+	[ReconOfficer] [nvarchar](100) NULL,
+	[ReconOfficerMail] [nvarchar](50) NULL,
+	[ReconOfficerTitle] [nvarchar](100) NULL,
+	[AccountOwnerName] [nvarchar](100) NULL,
+	[AccountOwnerMail] [nvarchar](50) NULL,
+	[RequesterId] [int] NULL,
+	[Status] [int] NULL,
+	[RequestAttachment] [nvarchar](100) NULL,
+	[RequestBranch] [int] NULL,
+	[RequestDate] [datetime] NULL,
+	[ReconFreqId] [int] NULL,
+	[ReconTypeId] [int] NULL,
+	[AuthoriseDate] [datetime] NULL,
+	[AuthoriserId] [int] NULL,
+	[HODApprovalDate] [datetime] NULL,
+	[HODApprovalUser] [int] NULL,
+	[ICReviewDate] [datetime] NULL,
+	[ICReviewUser] [int] NULL,
+	[ICReviewComments] [nvarchar](500) NULL,
+	[ICRejectDate] [datetime] NULL,
+	[ICRejectUser] [int] NULL,
+	[ICApproveDate] [datetime] NULL,
+	[ICApproveComments] [nvarchar](500) NULL,
+	[ICApproveUser] [int] NULL,
+	[FinanceApproveDate] [datetime] NULL,
+	[FinanceApproveUser] [int] NULL,
+	[FinanceApproveComment] [nvarchar](500) NULL,
+	[FinanceRejectDate] [datetime] NULL,
+	[FinanceRejectUser] [int] NULL,
+	[FinanceRejectComment] [nvarchar](500) NULL,
+	[AccountNumber] [nvarchar](50) NULL,
+	[AccountNoUpdateDate] [datetime] NULL,
+	[AccountNoUpdateUser] [int] NULL,
+	[IsTellerCashAccount] [int] NULL,
+	[Comment] [nvarchar](max) NULL,
+	[ReconTypeOther] [nvarchar](max) NULL,
+	[ReconFreqOther] [nvarchar](max) NULL,
+	[ROComments] [nvarchar](500) NULL,
+ CONSTRAINT [PK_glRequest] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GLType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[GLTypeName] [nvarchar](50) NULL,
+	[Status] [int] NULL,
+ CONSTRAINT [PK_GlType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[v_GLRequestType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE VIEW [dbo].[v_GLRequestType]
+AS
+
+	Select distinct t.Id, t.GLTypeName
+	from dbo.[GLRequest] r
+	inner join dbo.GLType t on t.Id  = r.GLTypeId
+
+GO
+/****** Object:  View [dbo].[Branch]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[Branch]
+AS
+Select 	*   
+from UserProfileServiceDb.dbo.[Branches] b
+GO
+/****** Object:  View [dbo].[Role]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+CREATE VIEW [dbo].[Role]
+AS
+Select r.[RoleId] [RoleID], r.[Name] [RoleName], r.[Description]
+			   
+from UserProfileServiceDb.dbo.[Roles] r
+GO
+/****** Object:  View [dbo].[User]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[User]
+AS
+SELECT u.UserId, u.Username, u.Password, u.FullName AS Name, u.T24UserName, u.Email, CASE u.IsActive WHEN 1 THEN 'Yes' WHEN 0 THEN 'No' END AS Authorized, u.BranchId, u.ChangePassword, u.IsActiveDirectoryUser, u.IsLocked, u.LogInAttemptCount, u.LastFailedLogInAttempt, 
+             u.ClientId, '' AS Globus_ID, b.TypeId AS TypeId, b.BranchName
+FROM   UserProfileServiceDb.dbo.Users AS u INNER JOIN
+             UserProfileServiceDb.dbo.Branches AS b ON b.Id = u.BranchId
+GO
+/****** Object:  View [dbo].[UserRole]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+CREATE VIEW [dbo].[UserRole]
+AS
+Select [RoleId]
+      ,[UserId]
+      ,[Id]
+  FROM [UserProfileServiceDb].[dbo].[UserRoles]
+GO
+/****** Object:  Table [dbo].[AccountType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AccountType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AccountType] [nvarchar](50) NULL,
+ CONSTRAINT [PK_AccountType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CashAccount]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CashAccount](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CashAccountType] [nvarchar](50) NULL,
+	[Status] [int] NULL,
+ CONSTRAINT [PK_CashAccount] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GLClosingBalType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLClosingBalType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ClosinBalType] [nvarchar](50) NULL,
+	[Status] [int] NULL,
+ CONSTRAINT [PK_GLClosingBalType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GLClosureRequest]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLClosureRequest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RequestDate] [datetime] NULL,
+	[RequesterId] [int] NULL,
+	[RequesterBranch] [int] NULL,
+	[GLAccountName] [nvarchar](100) NULL,
+	[GLAccountNumber] [nvarchar](50) NULL,
+	[ClosureReason] [nvarchar](500) NULL,
+	[HodName] [nvarchar](50) NULL,
+	[HodMail] [nvarchar](50) NULL,
+	[RequestAttachment] [nvarchar](50) NULL,
+	[AccountOwner] [nvarchar](50) NULL,
+	[AccountOwnerMail] [nvarchar](50) NULL,
+	[AccountOwnerTitle] [nvarchar](50) NULL,
+	[RequestStatus] [int] NULL,
+	[AuthoriseDate] [datetime] NULL,
+	[AuthoriserId] [int] NULL,
+	[ICApproveDate] [datetime] NULL,
+	[ICApproveComments] [nvarchar](500) NULL,
+	[ICApproveUser] [int] NULL,
+	[TellerCashAccount] [int] NULL,
+	[HODAuthUser] [int] NULL,
+	[HODAuthDate] [datetime] NULL,
+	[HODRejectComments] [nvarchar](500) NULL,
+	[RORejectComments] [nvarchar](500) NULL,
+ CONSTRAINT [PK_GLClosureRequest] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GLEtryType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLEtryType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[EntryTypeName] [nvarchar](50) NULL,
+	[Status] [int] NULL,
+ CONSTRAINT [PK_GlEtryType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GLReport]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GLReport](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ReportBranch] [int] NULL,
+	[Subject] [nvarchar](500) NULL,
+	[Reporter] [int] NULL,
+	[Contact] [nvarchar](50) NULL,
+	[SubmissionDate] [datetime] NULL,
+	[ProofDate] [datetime] NULL,
+	[ReportTemplate] [nvarchar](50) NULL,
+	[ReportAttachment] [nvarchar](100) NULL,
+	[ReportStatus] [int] NULL,
+	[Reviewer] [int] NULL,
+	[ReviewDate] [datetime] NULL,
+	[ReviewComments] [nvarchar](500) NULL,
+	[ReviewAction] [nvarchar](100) NULL,
+	[AmendDate] [datetime] NULL,
+	[AmendUser] [int] NULL,
+	[AmendAction] [nvarchar](100) NULL,
+	[LateSubmission] [nchar](10) NULL,
+ CONSTRAINT [PK_GLReport] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[IssueLogger]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[IssueLogger](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RequestId] [int] NULL,
+	[RequestType] [nvarchar](50) NULL,
+	[Action] [nvarchar](500) NULL,
+	[LogDate] [datetime] NULL,
+	[User] [int] NULL,
+ CONSTRAINT [PK_IssueLogger] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Menu]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Menu](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[MenuName] [nvarchar](50) NULL,
+	[Controller] [nvarchar](50) NULL,
+	[Action] [nvarchar](50) NULL,
+	[MainMenuId] [int] NULL,
+	[RoleId] [int] NULL,
+	[MenuPosition] [int] NULL,
+	[FontStyle] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Menu] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ReconciliationFrequency]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ReconciliationFrequency](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ReconFrequencyName] [nvarchar](50) NULL,
+ CONSTRAINT [PK_ReconciliationFrequency] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ReconciliationType]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ReconciliationType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ReconciliationTypeName] [nvarchar](50) NULL,
+ CONSTRAINT [PK_ReconciliationType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ReportStatus]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ReportStatus](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [nvarchar](50) NULL,
+ CONSTRAINT [PK_ReportStatus] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RequestStatus]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RequestStatus](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[StatusName] [nvarchar](50) NULL,
+ CONSTRAINT [PK_RequestStatus] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RoleMenu]    Script Date: 5/12/2023 11:24:03 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RoleMenu](
+	[RoleId] [int] NULL,
+	[MenuId] [int] NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_RoleMenu] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[CashAccount] ON 
+GO
+INSERT [dbo].[CashAccount] ([Id], [CashAccountType], [Status]) VALUES (1, N'Teller Cash Account', 1)
+GO
+INSERT [dbo].[CashAccount] ([Id], [CashAccountType], [Status]) VALUES (2, N'Sika Collect Teller Cash Account', 1)
+GO
+INSERT [dbo].[CashAccount] ([Id], [CashAccountType], [Status]) VALUES (3, N'Hospital Collections Teller Cash Account', 1)
+GO
+INSERT [dbo].[CashAccount] ([Id], [CashAccountType], [Status]) VALUES (4, N'N/A', 1)
+GO
+SET IDENTITY_INSERT [dbo].[CashAccount] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLClosingBalType] ON 
+GO
+INSERT [dbo].[GLClosingBalType] ([Id], [ClosinBalType], [Status]) VALUES (1, N'DR', 1)
+GO
+INSERT [dbo].[GLClosingBalType] ([Id], [ClosinBalType], [Status]) VALUES (2, N'CR', 1)
+GO
+INSERT [dbo].[GLClosingBalType] ([Id], [ClosinBalType], [Status]) VALUES (3, N'Zero', 1)
+GO
+SET IDENTITY_INSERT [dbo].[GLClosingBalType] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLClosureRequest] ON 
+GO
+INSERT [dbo].[GLClosureRequest] ([Id], [RequestDate], [RequesterId], [RequesterBranch], [GLAccountName], [GLAccountNumber], [ClosureReason], [HodName], [HodMail], [RequestAttachment], [AccountOwner], [AccountOwnerMail], [AccountOwnerTitle], [RequestStatus], [AuthoriseDate], [AuthoriserId], [ICApproveDate], [ICApproveComments], [ICApproveUser], [TellerCashAccount], [HODAuthUser], [HODAuthDate], [HODRejectComments], [RORejectComments]) VALUES (1, CAST(N'2022-09-05T10:04:51.577' AS DateTime), 2, 59, N'Branch Teller Cash Account', N'GHS66345354343', N'Testing closure', N'Peter Mensah', N'peter.mensah@cbg.com.gh', N'', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', N'', 2, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL)
+GO
+INSERT [dbo].[GLClosureRequest] ([Id], [RequestDate], [RequesterId], [RequesterBranch], [GLAccountName], [GLAccountNumber], [ClosureReason], [HodName], [HodMail], [RequestAttachment], [AccountOwner], [AccountOwnerMail], [AccountOwnerTitle], [RequestStatus], [AuthoriseDate], [AuthoriserId], [ICApproveDate], [ICApproveComments], [ICApproveUser], [TellerCashAccount], [HODAuthUser], [HODAuthDate], [HODRejectComments], [RORejectComments]) VALUES (29, CAST(N'2023-04-25T18:04:21.423' AS DateTime), 2, 92, N'John Asamoah', N'1234567890', N'Testing', N'Glenn Yaw Inkoom', N'glenn.inkoom@cbg.com.gh', N'', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', N'', 4, CAST(N'2023-04-25T18:17:50.230' AS DateTime), 2, NULL, NULL, NULL, 1, 2, CAST(N'2023-04-25T18:23:38.833' AS DateTime), N'Approved', NULL)
+GO
+SET IDENTITY_INSERT [dbo].[GLClosureRequest] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLEtryType] ON 
+GO
+INSERT [dbo].[GLEtryType] ([Id], [EntryTypeName], [Status]) VALUES (1, N'Automated', 1)
+GO
+INSERT [dbo].[GLEtryType] ([Id], [EntryTypeName], [Status]) VALUES (2, N'Manuel Posting', 1)
+GO
+SET IDENTITY_INSERT [dbo].[GLEtryType] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLReport] ON 
+GO
+INSERT [dbo].[GLReport] ([Id], [ReportBranch], [Subject], [Reporter], [Contact], [SubmissionDate], [ProofDate], [ReportTemplate], [ReportAttachment], [ReportStatus], [Reviewer], [ReviewDate], [ReviewComments], [ReviewAction], [AmendDate], [AmendUser], [AmendAction], [LateSubmission]) VALUES (1, 92, N'N/A', 2, N'0203349520', CAST(N'2023-03-30T15:02:03.950' AS DateTime), CAST(N'2023-03-30T00:00:00.000' AS DateTime), NULL, N'gg_2_92_2023-03-30.txt', 3, 2, CAST(N'2023-03-30T15:03:03.500' AS DateTime), N'Approved', N'Report Reviewed and approved', NULL, NULL, NULL, N'Y         ')
+GO
+INSERT [dbo].[GLReport] ([Id], [ReportBranch], [Subject], [Reporter], [Contact], [SubmissionDate], [ProofDate], [ReportTemplate], [ReportAttachment], [ReportStatus], [Reviewer], [ReviewDate], [ReviewComments], [ReviewAction], [AmendDate], [AmendUser], [AmendAction], [LateSubmission]) VALUES (2, 92, N'N/A', 2, N'sfdgfhkjk', CAST(N'2023-04-12T10:23:51.383' AS DateTime), CAST(N'2023-04-12T00:00:00.000' AS DateTime), NULL, N'yehowa_2_92_2023-04-12.txt', 4, 2, CAST(N'2023-04-12T10:24:43.410' AS DateTime), N'No review', N'Report rejected', NULL, NULL, NULL, N'N         ')
+GO
+INSERT [dbo].[GLReport] ([Id], [ReportBranch], [Subject], [Reporter], [Contact], [SubmissionDate], [ProofDate], [ReportTemplate], [ReportAttachment], [ReportStatus], [Reviewer], [ReviewDate], [ReviewComments], [ReviewAction], [AmendDate], [AmendUser], [AmendAction], [LateSubmission]) VALUES (3, 125, N'Report', 2, N'0203343433', CAST(N'2023-04-19T11:25:02.383' AS DateTime), CAST(N'2023-04-19T00:00:00.000' AS DateTime), NULL, N'yehowa_2_125_2023-04-19.txt', 2, 2, CAST(N'2023-04-19T11:06:26.297' AS DateTime), N'Check Reviewer', N'Report rejected', CAST(N'2023-04-19T11:25:02.383' AS DateTime), 2, N'report file', N'N         ')
+GO
+INSERT [dbo].[GLReport] ([Id], [ReportBranch], [Subject], [Reporter], [Contact], [SubmissionDate], [ProofDate], [ReportTemplate], [ReportAttachment], [ReportStatus], [Reviewer], [ReviewDate], [ReviewComments], [ReviewAction], [AmendDate], [AmendUser], [AmendAction], [LateSubmission]) VALUES (4, 124, N'Spintex', 2, N'34567890', CAST(N'2023-04-20T10:58:01.320' AS DateTime), CAST(N'2023-04-20T00:00:00.000' AS DateTime), NULL, N'sheesh_2_124_2023-04-20.txt', 2, 2, CAST(N'2023-04-20T10:57:31.283' AS DateTime), N'Attach different t24', N'Report rejected', CAST(N'2023-04-20T10:58:01.320' AS DateTime), 2, N'report file', N'N         ')
+GO
+SET IDENTITY_INSERT [dbo].[GLReport] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLRequest] ON 
+GO
+INSERT [dbo].[GLRequest] ([Id], [GLTypeId], [GLAccountName], [GLPurpose], [GLEntryType], [GLExpectedClosingBalType], [HodName], [HodMail], [ReconOfficer], [ReconOfficerMail], [ReconOfficerTitle], [AccountOwnerName], [AccountOwnerMail], [RequesterId], [Status], [RequestAttachment], [RequestBranch], [RequestDate], [ReconFreqId], [ReconTypeId], [AuthoriseDate], [AuthoriserId], [HODApprovalDate], [HODApprovalUser], [ICReviewDate], [ICReviewUser], [ICReviewComments], [ICRejectDate], [ICRejectUser], [ICApproveDate], [ICApproveComments], [ICApproveUser], [FinanceApproveDate], [FinanceApproveUser], [FinanceApproveComment], [FinanceRejectDate], [FinanceRejectUser], [FinanceRejectComment], [AccountNumber], [AccountNoUpdateDate], [AccountNoUpdateUser], [IsTellerCashAccount], [Comment], [ReconTypeOther], [ReconFreqOther], [ROComments]) VALUES (2, 1, N'Test GL Account', N'For Testing', 2, 3, N'Peter Mensah', N'peter.mensah@cbg.com.gh', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', N'IT Business Analyst', N'Ephraim Kwaku Osei', N'ephraim.osei@cbg.com.gh', 2, 10, N'', 59, CAST(N'2022-08-31T11:00:02.617' AS DateTime), 1, 3, NULL, NULL, CAST(N'2022-08-31T11:04:57.343' AS DateTime), 2, CAST(N'2022-08-31T12:03:24.663' AS DateTime), 2, N'Pls proceed', NULL, NULL, CAST(N'2022-08-31T12:03:25.753' AS DateTime), N'Pls proceed', 2, NULL, NULL, NULL, NULL, NULL, NULL, N'GHS9836774643', CAST(N'2022-08-31T15:50:47.107' AS DateTime), 2, 1, NULL, NULL, NULL, NULL)
+GO
+INSERT [dbo].[GLRequest] ([Id], [GLTypeId], [GLAccountName], [GLPurpose], [GLEntryType], [GLExpectedClosingBalType], [HodName], [HodMail], [ReconOfficer], [ReconOfficerMail], [ReconOfficerTitle], [AccountOwnerName], [AccountOwnerMail], [RequesterId], [Status], [RequestAttachment], [RequestBranch], [RequestDate], [ReconFreqId], [ReconTypeId], [AuthoriseDate], [AuthoriserId], [HODApprovalDate], [HODApprovalUser], [ICReviewDate], [ICReviewUser], [ICReviewComments], [ICRejectDate], [ICRejectUser], [ICApproveDate], [ICApproveComments], [ICApproveUser], [FinanceApproveDate], [FinanceApproveUser], [FinanceApproveComment], [FinanceRejectDate], [FinanceRejectUser], [FinanceRejectComment], [AccountNumber], [AccountNoUpdateDate], [AccountNoUpdateUser], [IsTellerCashAccount], [Comment], [ReconTypeOther], [ReconFreqOther], [ROComments]) VALUES (1079, 1, N'John Asamoah', N'Teller cash test', 2, 3, N'Glenn Yaw Inkoom', N'glenn.inkoom@cbg.com.gh', N'Nana-Addo Opoku', N'nana-addo.opoku@cbg.com.gh', N'Digital Solutions Developer', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', 2, 10, N'', 92, CAST(N'2023-04-25T10:09:26.657' AS DateTime), 2, 3, CAST(N'2023-04-25T11:18:18.377' AS DateTime), 2, NULL, NULL, CAST(N'2023-04-25T15:58:55.710' AS DateTime), 2, N'Approved
+', NULL, NULL, CAST(N'2023-04-25T15:58:55.710' AS DateTime), N'Approved
+', 2, NULL, NULL, NULL, NULL, NULL, NULL, N'1234567890', CAST(N'2023-04-25T16:02:42.193' AS DateTime), 2, 1, N'Approved', NULL, NULL, NULL)
+GO
+INSERT [dbo].[GLRequest] ([Id], [GLTypeId], [GLAccountName], [GLPurpose], [GLEntryType], [GLExpectedClosingBalType], [HodName], [HodMail], [ReconOfficer], [ReconOfficerMail], [ReconOfficerTitle], [AccountOwnerName], [AccountOwnerMail], [RequesterId], [Status], [RequestAttachment], [RequestBranch], [RequestDate], [ReconFreqId], [ReconTypeId], [AuthoriseDate], [AuthoriserId], [HODApprovalDate], [HODApprovalUser], [ICReviewDate], [ICReviewUser], [ICReviewComments], [ICRejectDate], [ICRejectUser], [ICApproveDate], [ICApproveComments], [ICApproveUser], [FinanceApproveDate], [FinanceApproveUser], [FinanceApproveComment], [FinanceRejectDate], [FinanceRejectUser], [FinanceRejectComment], [AccountNumber], [AccountNoUpdateDate], [AccountNoUpdateUser], [IsTellerCashAccount], [Comment], [ReconTypeOther], [ReconFreqOther], [ROComments]) VALUES (1080, 1, N'John Asamoah', N'Testing', 2, 3, N'Glenn Yaw Inkoom', N'glenn.inkoom@cbg.com.gh', N'Gabriel  Kojo Gyandoh', N'gabriel.gyandoh@cbg.com.gh', N'Officer Integration', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', 2, 8, N'', 89, CAST(N'2023-04-28T12:17:55.497' AS DateTime), 2, 3, CAST(N'2023-04-28T12:31:35.260' AS DateTime), 2, NULL, NULL, CAST(N'2023-04-28T14:41:04.803' AS DateTime), 2, N'Approved', NULL, NULL, CAST(N'2023-04-28T14:41:04.803' AS DateTime), N'Approved', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, N'Approved', NULL, NULL, NULL)
+GO
+INSERT [dbo].[GLRequest] ([Id], [GLTypeId], [GLAccountName], [GLPurpose], [GLEntryType], [GLExpectedClosingBalType], [HodName], [HodMail], [ReconOfficer], [ReconOfficerMail], [ReconOfficerTitle], [AccountOwnerName], [AccountOwnerMail], [RequesterId], [Status], [RequestAttachment], [RequestBranch], [RequestDate], [ReconFreqId], [ReconTypeId], [AuthoriseDate], [AuthoriserId], [HODApprovalDate], [HODApprovalUser], [ICReviewDate], [ICReviewUser], [ICReviewComments], [ICRejectDate], [ICRejectUser], [ICApproveDate], [ICApproveComments], [ICApproveUser], [FinanceApproveDate], [FinanceApproveUser], [FinanceApproveComment], [FinanceRejectDate], [FinanceRejectUser], [FinanceRejectComment], [AccountNumber], [AccountNoUpdateDate], [AccountNoUpdateUser], [IsTellerCashAccount], [Comment], [ReconTypeOther], [ReconFreqOther], [ROComments]) VALUES (1081, 1, N'John Asamoah', N'Testing', 2, 3, N'Glenn Yaw Inkoom', N'glenn.inkoom@cbg.com.gh', N'Lorenzio Emmanuel Oduro', N'lorenzio.oduro@cbg.com.gh', N'IT Business Analyst', N'Nana-Addo Opoku', N'nana-addo.opoku@cbg.com.gh', 2, 4, N'glpic2.jpg', 89, CAST(N'2023-05-02T09:51:08.040' AS DateTime), 3, 4, CAST(N'2023-05-02T12:59:18.110' AS DateTime), 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, N'Approved>', N'Other', N'Quarterly', NULL)
+GO
+SET IDENTITY_INSERT [dbo].[GLRequest] OFF
+GO
+SET IDENTITY_INSERT [dbo].[GLType] ON 
+GO
+INSERT [dbo].[GLType] ([Id], [GLTypeName], [Status]) VALUES (1, N'Asset', 1)
+GO
+INSERT [dbo].[GLType] ([Id], [GLTypeName], [Status]) VALUES (2, N'Liability', 1)
+GO
+INSERT [dbo].[GLType] ([Id], [GLTypeName], [Status]) VALUES (3, N'Income', 1)
+GO
+INSERT [dbo].[GLType] ([Id], [GLTypeName], [Status]) VALUES (4, N'Expense', 1)
+GO
+INSERT [dbo].[GLType] ([Id], [GLTypeName], [Status]) VALUES (5, N'Capital', 1)
+GO
+SET IDENTITY_INSERT [dbo].[GLType] OFF
+GO
+SET IDENTITY_INSERT [dbo].[IssueLogger] ON 
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (1, 1017, N'GL Creation', N'HOD Approved', CAST(N'2022-08-23T10:20:59.013' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (2, 1018, N'GL Creation', N'HOD Approved', CAST(N'2022-08-23T10:27:40.287' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (3, 1019, N'GL Creation', N'HOD Approved', CAST(N'2022-08-23T11:10:58.443' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (4, 1020, N'GL Creation', N'RO Approved', CAST(N'2022-08-23T11:28:50.590' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (5, 1020, N'GL Creation', N'HOD Approved', CAST(N'2022-08-23T11:30:51.320' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (6, 1020, N'GL Creation', N'IC Approved', CAST(N'2022-08-23T11:32:16.657' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (7, 1020, N'GL Creation', N'Finance Approved', CAST(N'2022-08-23T11:34:12.090' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (8, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-25T15:50:04.567' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (9, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-29T17:27:03.037' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (10, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-29T17:43:34.080' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (11, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-29T17:46:22.767' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (12, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-29T17:51:03.193' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (13, 1, N'GL Creation', N'HOD Approved', CAST(N'2022-08-31T10:27:48.447' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (14, 2, N'GL Creation', N'HOD Approved', CAST(N'2022-08-31T11:04:57.353' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (15, 2, N'GL Creation', N'IC Approved', CAST(N'2022-08-31T12:03:32.780' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (16, 2, N'GL Creation', N'Account Number Updated', CAST(N'2022-08-31T15:50:47.223' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (17, 3, N'GL Creation', N'HOD Approved', CAST(N'2022-08-31T16:39:07.367' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (18, 3, N'GL Creation', N'RO Approved', CAST(N'2022-09-01T11:15:41.617' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (19, 3, N'GL Creation', N'IC Approved', CAST(N'2022-09-01T11:20:59.630' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (20, 3, N'GL Creation', N'Finance Approved', CAST(N'2022-09-01T12:34:49.077' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (21, 4, N'GL Creation', N'HOD Approved', CAST(N'2022-09-01T14:37:19.147' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (22, 4, N'GL Creation', N'RO Approved', CAST(N'2022-09-01T14:38:32.077' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (23, 4, N'GL Creation', N'IC Approved', CAST(N'2022-09-01T14:39:41.817' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (24, 4, N'GL Creation', N'Finance Approved', CAST(N'2022-09-01T14:42:09.413' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (25, 3, N'GL Creation', N'Account Number Updated', CAST(N'2022-09-01T15:09:56.157' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (26, 4, N'GL Creation', N'Account Number Updated', CAST(N'2022-09-01T15:10:46.457' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (27, 5, N'GL Creation', N'HOD Approved', CAST(N'2022-09-01T15:14:45.827' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (28, 5, N'GL Creation', N'RO Approved', CAST(N'2022-09-01T15:22:36.907' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (29, 5, N'GL Creation', N'IC Approved', CAST(N'2022-09-01T15:27:32.710' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (30, 5, N'GL Creation', N'Account Number Updated', CAST(N'2022-09-01T15:45:30.747' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (31, 4, N'GL Closure', N'IC approved', CAST(N'2022-09-05T13:14:59.290' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (32, 4, N'GL Closure', N'Closure completed', CAST(N'2022-09-05T15:19:10.430' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (33, 1007, N'GL Creation', N'HOD Approved', CAST(N'2023-03-09T14:43:43.067' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (34, 1008, N'GL Creation', N'HOD Approved', CAST(N'2023-03-09T14:59:17.410' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (35, 1008, N'GL Creation', N'RO Approved', CAST(N'2023-03-09T15:03:52.913' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (36, 1008, N'GL Creation', N'IC Approved', CAST(N'2023-03-09T15:08:18.960' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (37, 1008, N'GL Creation', N'Finance Approved', CAST(N'2023-03-09T15:10:00.570' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (38, 1008, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-09T15:11:21.193' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (39, 7, N'GL Creation', N'HOD Approved', CAST(N'2023-03-16T12:12:09.667' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (40, 1011, N'GL Creation', N'HOD Approved', CAST(N'2023-03-17T09:25:19.200' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (41, 1011, N'GL Creation', N'HOD Approved', CAST(N'2023-03-17T09:34:37.977' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (42, 1012, N'GL Creation', N'HOD Approved', CAST(N'2023-03-17T10:20:11.093' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (43, 1013, N'GL Creation', N'HOD Approved', CAST(N'2023-03-17T11:08:12.043' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (44, 1021, N'GL Creation', N'HOD Approved', CAST(N'2023-03-20T15:32:16.797' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (45, 1023, N'GL Creation', N'HOD Approved', CAST(N'2023-03-20T15:35:21.607' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (46, 1026, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T13:12:35.650' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (47, 1026, N'GL Creation', N'RO Approved', CAST(N'2023-03-21T13:14:43.043' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (48, 1028, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T13:42:50.860' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (49, 1028, N'GL Creation', N'RO rejected request', CAST(N'2023-03-21T13:43:24.480' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (50, 1028, N'GL Creation', N'Request Submitted', CAST(N'2023-03-21T15:13:33.020' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (51, 1028, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T15:14:01.553' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (52, 1025, N'GL Creation', N'RO rejected request', CAST(N'2023-03-21T15:26:20.827' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (53, 1028, N'GL Creation', N'RO Approved', CAST(N'2023-03-21T15:27:06.633' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (54, 1024, N'GL Creation', N'RO rejected request', CAST(N'2023-03-21T15:29:07.720' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (55, 1024, N'GL Creation', N'Request Submitted', CAST(N'2023-03-21T15:29:37.957' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (56, 1025, N'GL Creation', N'Request Submitted', CAST(N'2023-03-21T15:33:46.987' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (57, 1025, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T15:35:11.453' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (58, 1025, N'GL Creation', N'RO Approved', CAST(N'2023-03-21T15:35:44.363' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (59, 1029, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T16:03:35.400' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (60, 1029, N'GL Creation', N'RO Approved', CAST(N'2023-03-21T16:04:22.190' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (61, 1025, N'GL Creation', N'IC Reject', CAST(N'2023-03-21T16:05:09.197' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (62, 1030, N'GL Creation', N'HOD Approved', CAST(N'2023-03-21T16:50:22.183' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (63, 1031, N'GL Creation', N'RO rejected request', CAST(N'2023-03-22T09:28:02.417' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (64, 1031, N'GL Creation', N'Request Submitted', CAST(N'2023-03-22T09:28:26.520' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (65, 1031, N'GL Creation', N'RO rejected request', CAST(N'2023-03-22T09:34:57.010' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (66, 1030, N'GL Creation', N'RO rejected request', CAST(N'2023-03-22T15:13:39.910' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (67, 1033, N'GL Creation', N'HOD Approved', CAST(N'2023-03-22T16:59:49.220' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (68, 1033, N'GL Creation', N'HOD Approved', CAST(N'2023-03-22T17:00:18.877' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (69, 1033, N'GL Creation', N'RO Approved', CAST(N'2023-03-22T17:03:38.380' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (70, 1032, N'GL Creation', N'IC Approved', CAST(N'2023-03-23T09:12:22.303' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (71, 1030, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T09:29:30.287' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (72, 1030, N'GL Creation', N'IC Approved', CAST(N'2023-03-23T09:36:10.483' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (73, 1032, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T09:53:37.850' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (74, 1032, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T10:35:05.273' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (75, 1032, N'GL Creation', N'RO rejected request', CAST(N'2023-03-23T10:42:22.520' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (76, 1032, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T10:42:43.597' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (77, 1032, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T11:27:32.200' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (78, 1032, N'GL Creation', N'RO rejected request', CAST(N'2023-03-23T11:30:08.143' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (79, 1032, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T14:20:14.993' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (80, 1032, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T14:22:31.943' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (81, 1031, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T15:44:21.043' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (82, 1031, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T15:45:22.377' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (83, 1031, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T15:52:04.673' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (84, 1031, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T15:52:55.860' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (85, 1031, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T16:51:48.257' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (86, 1031, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T17:00:12.153' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (87, 1034, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T17:15:05.090' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (88, 1035, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T17:39:57.357' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (89, 1031, N'GL Creation', N'RO Approved', CAST(N'2023-03-23T17:48:09.190' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (90, 1032, N'GL Creation', N'RO Approved', CAST(N'2023-03-23T17:48:51.137' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (91, 1035, N'GL Creation', N'RO Approved', CAST(N'2023-03-23T17:50:42.287' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (92, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T18:19:59.327' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (93, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-23T18:33:24.043' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (94, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T18:33:58.733' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (95, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T18:38:38.167' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (96, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-23T18:44:41.083' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (97, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-23T18:44:53.597' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (98, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-23T18:45:19.483' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (99, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-24T08:56:55.743' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (100, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T08:58:28.610' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (101, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T09:29:30.787' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (102, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-24T09:30:45.960' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (103, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T09:31:08.000' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (104, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T09:35:34.910' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (105, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-24T09:36:25.457' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (106, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T09:36:40.917' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (107, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T10:13:37.703' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (108, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-24T10:15:35.017' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (109, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T10:15:57.550' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (110, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T10:17:02.877' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (111, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T10:17:49.823' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (112, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T11:28:42.977' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (113, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-24T12:48:35.673' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (114, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-24T12:49:45.977' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (115, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T10:41:12.967' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (116, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T12:18:52.163' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (117, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T12:24:43.497' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (118, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T12:25:48.623' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (119, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T12:26:41.683' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (120, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T12:28:12.327' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (121, 1036, N'GL Creation', N'RO rejected request', CAST(N'2023-03-27T12:28:40.393' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (122, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T12:35:32.617' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (123, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T14:37:24.133' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (124, 1036, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T14:55:31.773' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (125, 1037, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T16:02:57.540' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (126, 1037, N'GL Creation', N'Request Submitted', CAST(N'2023-03-27T16:06:35.650' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (127, 1037, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T16:07:24.653' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (128, 1037, N'GL Creation', N'RO Approved', CAST(N'2023-03-27T16:08:25.283' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (129, 1036, N'GL Creation', N'HOD Approved', CAST(N'2023-03-27T16:40:52.650' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (130, 1036, N'GL Creation', N'RO Approved', CAST(N'2023-03-27T17:01:53.333' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (131, 1038, N'GL Creation', N'Request Submitted', CAST(N'2023-03-28T08:53:26.680' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (132, 1038, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T08:54:21.567' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (133, 1038, N'GL Creation', N'Request Submitted', CAST(N'2023-03-28T08:56:07.270' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (134, 1038, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T09:03:06.590' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (135, 1038, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T09:13:01.297' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (136, 1039, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T10:30:40.790' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (137, 1039, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T10:31:48.850' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (138, 1039, N'GL Creation', N'IC Approved', CAST(N'2023-03-28T10:33:48.433' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (139, 1039, N'GL Creation', N'Finance Approved', CAST(N'2023-03-28T10:34:42.940' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (140, 1039, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-28T11:54:36.570' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (141, 1040, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T12:07:19.967' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (142, 1040, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T12:07:40.943' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (143, 1040, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T12:21:20.127' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (144, 1040, N'GL Creation', N'Request Submitted', CAST(N'2023-03-28T12:24:05.740' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (145, 1040, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T12:24:39.463' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (146, 1040, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T12:25:54.993' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (147, 1040, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T12:30:57.670' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (148, 1040, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T12:31:39.147' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (149, 1040, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T12:33:48.590' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (150, 1040, N'GL Creation', N'IC Approved', CAST(N'2023-03-28T12:34:54.983' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (151, 1041, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T16:09:18.137' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (152, 1040, N'GL Creation', N'Finance Approved', CAST(N'2023-03-28T16:13:29.043' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (153, 1041, N'GL Creation', N'Request Submitted', CAST(N'2023-03-28T16:14:02.447' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (154, 1041, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T16:15:18.187' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (155, 1041, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T16:16:58.283' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (156, 1041, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T16:32:26.500' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (157, 1042, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T17:06:23.533' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (158, 1042, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T17:24:34.337' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (159, 1042, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T17:33:42.157' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (160, 1042, N'GL Creation', N'IC Approved', CAST(N'2023-03-28T17:40:02.537' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (161, 1042, N'GL Creation', N'Finance Approved', CAST(N'2023-03-28T17:43:53.893' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (162, 1043, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T17:49:40.763' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (163, 1043, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T17:51:12.113' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (164, 1043, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T17:54:39.110' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (165, 1043, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T18:01:33.350' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (166, 1043, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T18:15:32.680' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (167, 1044, N'GL Creation', N'HOD Approved', CAST(N'2023-03-28T18:48:40.843' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (168, 1044, N'GL Creation', N'RO Approved', CAST(N'2023-03-28T18:51:13.947' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (169, 1044, N'GL Creation', N'IC Approved', CAST(N'2023-03-28T18:52:43.700' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (170, 1043, N'GL Creation', N'IC Approved', CAST(N'2023-03-29T10:34:54.200' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (171, 1045, N'GL Creation', N'HOD Approved', CAST(N'2023-03-29T10:50:30.317' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (172, 1045, N'GL Creation', N'RO Approved', CAST(N'2023-03-29T10:51:51.523' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (173, 1045, N'GL Creation', N'RO Approved', CAST(N'2023-03-29T10:56:53.030' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (174, 1045, N'GL Creation', N'RO Approved', CAST(N'2023-03-29T10:58:13.647' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (175, 1045, N'GL Creation', N'RO Approved', CAST(N'2023-03-29T11:01:22.313' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (176, 1045, N'GL Creation', N'IC Approved', CAST(N'2023-03-29T11:02:23.090' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (177, 1043, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-29T11:08:30.027' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (178, 1044, N'GL Creation', N'Finance Approved', CAST(N'2023-03-29T12:49:39.167' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (179, 1045, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-30T10:45:12.593' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (180, 1044, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-30T10:52:42.497' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (181, 1051, N'GL Creation', N'HOD Approved', CAST(N'2023-03-30T15:15:01.140' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (182, 1051, N'GL Creation', N'RO Approved', CAST(N'2023-03-30T15:15:58.550' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (183, 1051, N'GL Creation', N'IC Approved', CAST(N'2023-03-30T15:20:49.917' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (184, 1051, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-30T15:26:09.897' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (185, 1052, N'GL Creation', N'HOD Approved', CAST(N'2023-03-30T15:31:44.197' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (186, 1052, N'GL Creation', N'RO Approved', CAST(N'2023-03-30T15:32:41.083' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (187, 1052, N'GL Creation', N'IC Approved', CAST(N'2023-03-30T15:33:31.643' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (188, 1053, N'GL Creation', N'HOD Approved', CAST(N'2023-03-31T15:31:47.453' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (189, 1053, N'GL Creation', N'Request Submitted', CAST(N'2023-03-31T15:34:41.660' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (190, 1053, N'GL Creation', N'HOD Approved', CAST(N'2023-03-31T15:35:39.470' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (191, 1053, N'GL Creation', N'RO Approved', CAST(N'2023-03-31T15:43:07.140' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (192, 1053, N'GL Creation', N'IC Approved', CAST(N'2023-03-31T15:45:02.480' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (193, 1053, N'GL Creation', N'Finance Approved', CAST(N'2023-03-31T15:46:25.737' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (194, 1053, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-31T15:48:56.123' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (195, 1054, N'GL Creation', N'HOD Approved', CAST(N'2023-03-31T15:52:03.383' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (196, 1054, N'GL Creation', N'RO Approved', CAST(N'2023-03-31T15:52:26.380' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (197, 1054, N'GL Creation', N'IC Approved', CAST(N'2023-03-31T15:53:01.527' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (198, 1054, N'GL Creation', N'Finance Approved', CAST(N'2023-03-31T16:01:00.790' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (199, 1054, N'GL Creation', N'Account Number Updated', CAST(N'2023-03-31T16:02:54.697' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (200, 1055, N'GL Creation', N'HOD Approved', CAST(N'2023-03-31T16:09:42.147' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (201, 1055, N'GL Creation', N'RO Approved', CAST(N'2023-03-31T16:10:08.123' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (202, 1056, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T08:12:32.267' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (203, 1056, N'GL Creation', N'Request Submitted', CAST(N'2023-04-03T08:13:12.127' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (204, 1057, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T08:25:54.150' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (205, 1057, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T08:32:40.010' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (206, 1057, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T08:34:11.267' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (207, 1057, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T08:34:37.607' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (208, 1057, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T10:01:56.497' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (209, 1057, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T11:08:11.713' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (210, 1057, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T11:09:46.000' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (211, 1057, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-03T11:13:11.823' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (212, 1058, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T11:55:45.917' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (213, 1058, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T12:07:17.510' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (214, 1058, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T12:13:05.270' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (215, 1058, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-03T12:13:56.963' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (216, 1059, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T12:40:25.157' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (217, 1059, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T12:41:14.317' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (218, 1059, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T13:13:19.917' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (219, 1059, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-03T13:23:02.743' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (220, 1060, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T13:28:18.913' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (221, 1060, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T13:28:42.750' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (222, 1060, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T13:30:39.780' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (223, 1060, N'GL Creation', N'Finance Approved', CAST(N'2023-04-03T13:32:05.277' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (224, 1060, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-03T13:34:03.293' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (225, 1061, N'GL Creation', N'RO Approved', CAST(N'2023-04-03T13:53:12.143' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (226, 1061, N'GL Creation', N'HOD Approved', CAST(N'2023-04-03T13:53:55.893' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (227, 1061, N'GL Creation', N'IC Approved', CAST(N'2023-04-03T13:55:25.803' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (228, 1061, N'GL Creation', N'Finance Approved', CAST(N'2023-04-03T13:56:15.780' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (229, 1061, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-03T13:57:40.670' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (230, 1058, N'GL Creation', N'RO Approved', CAST(N'2023-04-11T12:57:32.417' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (231, 1059, N'GL Creation', N'RO Approved', CAST(N'2023-04-11T12:59:25.240' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (232, 1063, N'GL Creation', N'RO Approved', CAST(N'2023-04-11T15:17:16.360' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (233, 1063, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T08:46:49.727' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (234, 1058, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T09:03:20.223' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (235, 1064, N'GL Creation', N'RO Approved', CAST(N'2023-04-12T10:59:40.033' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (236, 1064, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T11:00:29.750' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (237, 1064, N'GL Creation', N'IC Approved', CAST(N'2023-04-12T11:01:35.437' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (238, 1064, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-12T11:05:08.037' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (239, 1065, N'GL Creation', N'RO Approved', CAST(N'2023-04-12T11:06:37.163' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (240, 1065, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T11:07:37.663' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (241, 1065, N'GL Creation', N'IC Approved', CAST(N'2023-04-12T11:08:13.640' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (242, 1065, N'GL Creation', N'Finance Approved', CAST(N'2023-04-12T11:08:52.733' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (243, 1065, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-12T11:09:52.503' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (244, 1066, N'GL Creation', N'RO Approved', CAST(N'2023-04-12T11:12:09.500' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (245, 1066, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T11:12:43.213' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (246, 1066, N'GL Creation', N'IC Approved', CAST(N'2023-04-12T11:13:15.613' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (247, 1066, N'GL Creation', N'Finance Approved', CAST(N'2023-04-12T11:18:26.030' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (248, 1066, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-12T11:19:24.910' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (249, 1067, N'GL Creation', N'RO Approved', CAST(N'2023-04-12T11:41:02.890' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (250, 1067, N'GL Creation', N'HOD Approved', CAST(N'2023-04-12T11:41:27.137' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (251, 1067, N'GL Creation', N'IC Approved', CAST(N'2023-04-12T11:41:58.083' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (252, 1067, N'GL Creation', N'Finance Approved', CAST(N'2023-04-12T12:18:52.903' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (253, 9, N'GL Closure', N'IC approved', CAST(N'2023-04-13T16:54:47.663' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (254, 10, N'GL Closure', N'Closure completed', CAST(N'2023-04-17T15:48:33.977' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (255, 1068, N'GL Creation', N'RO Approved', CAST(N'2023-04-18T11:08:57.680' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (256, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-18T11:15:33.100' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (257, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-18T11:25:45.000' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (258, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-18T11:28:04.160' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (259, 1068, N'GL Creation', N'IC Reject', CAST(N'2023-04-18T11:39:27.390' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (260, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-18T12:01:34.027' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (261, 1069, N'GL Creation', N'RO Approved', CAST(N'2023-04-18T12:04:10.517' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (262, 1069, N'GL Creation', N'HOD Approved', CAST(N'2023-04-18T12:26:14.017' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (263, 1069, N'GL Creation', N'IC Approved', CAST(N'2023-04-18T12:33:57.810' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (264, 1069, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-18T12:34:53.663' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (265, 1069, N'GL Creation', N'HOD Approved', CAST(N'2023-04-18T14:40:54.933' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (266, 13, N'GL Closure', N'IC approved', CAST(N'2023-04-18T16:51:20.757' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (267, 1070, N'GL Creation', N'RO Approved', CAST(N'2023-04-19T08:30:19.480' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (268, 1070, N'GL Creation', N'HOD Approved', CAST(N'2023-04-19T08:31:40.820' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (269, 1070, N'GL Creation', N'IC Approved', CAST(N'2023-04-19T08:32:45.300' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (270, 1070, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-19T08:35:40.007' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (271, 1071, N'GL Creation', N'RO Approved', CAST(N'2023-04-19T08:52:01.350' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (272, 1071, N'GL Creation', N'HOD Approved', CAST(N'2023-04-19T08:53:56.147' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (273, 1071, N'GL Creation', N'IC Approved', CAST(N'2023-04-19T08:55:58.743' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (274, 1071, N'GL Creation', N'Finance Approved', CAST(N'2023-04-19T08:58:51.123' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (275, 1071, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-19T09:05:13.177' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (276, 17, N'GL Closure', N'IC approved', CAST(N'2023-04-19T09:35:18.853' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (277, 17, N'GL Closure', N'IC approved', CAST(N'2023-04-19T09:40:38.500' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (278, 17, N'GL Closure', N'IC approved', CAST(N'2023-04-19T09:46:43.057' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (279, 17, N'GL Closure', N'IC approved', CAST(N'2023-04-19T09:59:49.007' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (280, 17, N'GL Closure', N'Closure completed', CAST(N'2023-04-19T10:16:35.173' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (281, 18, N'GL Closure', N'IC approved', CAST(N'2023-04-19T10:20:42.643' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (282, 1072, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T09:19:25.133' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (283, 1072, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T09:23:22.483' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (284, 1069, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T09:24:42.707' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (285, 1072, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T09:27:03.893' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (286, 1072, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T09:27:45.647' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (287, 1072, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T09:28:15.920' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (288, 19, N'GL Closure', N'IC approved', CAST(N'2023-04-20T10:25:01.030' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (289, 19, N'GL Closure', N'Closure completed', CAST(N'2023-04-20T10:26:40.000' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (290, 20, N'GL Closure', N'IC approved', CAST(N'2023-04-20T10:43:22.560' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (291, 1073, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T14:24:52.573' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (292, 1073, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T14:26:18.477' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (293, 1073, N'GL Creation', N'IC Approved', CAST(N'2023-04-20T14:27:43.417' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (294, 1073, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-20T14:30:43.840' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (295, 1074, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T14:33:16.070' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (296, 1074, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T14:34:13.917' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (297, 1074, N'GL Creation', N'IC Approved', CAST(N'2023-04-20T14:34:48.473' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (298, 1074, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-20T14:35:46.417' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (299, 1075, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T14:37:41.110' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (300, 1075, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T14:38:20.940' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (301, 1075, N'GL Creation', N'IC Approved', CAST(N'2023-04-20T14:39:00.827' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (302, 1075, N'GL Creation', N'Finance Approved', CAST(N'2023-04-20T14:39:54.933' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (303, 1075, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-20T14:41:21.453' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (304, 1076, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T14:44:52.593' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (305, 1076, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T14:45:22.157' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (306, 1076, N'GL Creation', N'IC Approved', CAST(N'2023-04-20T14:46:02.223' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (307, 1076, N'GL Creation', N'Finance Approved', CAST(N'2023-04-20T14:46:42.817' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (308, 1076, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-20T14:48:54.707' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (309, 21, N'GL Closure', N'IC approved', CAST(N'2023-04-20T14:53:38.813' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (310, 21, N'GL Closure', N'Closure completed', CAST(N'2023-04-20T15:02:42.010' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (311, 22, N'GL Closure', N'IC approved', CAST(N'2023-04-20T15:06:37.490' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (312, 1077, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T15:14:51.293' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (313, 1077, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T15:15:37.220' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (314, 1077, N'GL Creation', N'HOD Approved', CAST(N'2023-04-20T15:16:10.767' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (315, 1077, N'GL Creation', N'IC Reject', CAST(N'2023-04-20T15:18:01.297' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (316, 1077, N'GL Creation', N'Request Submitted', CAST(N'2023-04-20T15:21:07.677' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (317, 1077, N'GL Creation', N'RO Approved', CAST(N'2023-04-20T15:21:47.750' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (318, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-21T09:26:12.733' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (319, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-21T10:04:18.727' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (320, 1068, N'GL Creation', N'RO Approved', CAST(N'2023-04-21T10:04:47.350' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (321, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-21T10:05:12.527' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (322, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-21T10:06:41.443' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (323, 1068, N'GL Creation', N'RO Approved', CAST(N'2023-04-21T10:07:10.493' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (324, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-21T10:08:00.577' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (325, 1068, N'GL Creation', N'IC Approved', CAST(N'2023-04-21T10:08:28.017' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (326, 1068, N'GL Creation', N'Finance Approved', CAST(N'2023-04-21T10:10:02.830' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (327, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-21T10:17:16.667' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (328, 1068, N'GL Creation', N'Request Submitted', CAST(N'2023-04-21T10:21:37.393' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (329, 1068, N'GL Creation', N'RO Approved', CAST(N'2023-04-21T10:23:45.233' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (330, 1068, N'GL Creation', N'HOD Approved', CAST(N'2023-04-21T10:24:11.790' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (331, 1068, N'GL Creation', N'IC Approved', CAST(N'2023-04-21T10:26:20.560' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (332, 1068, N'GL Creation', N'Finance Approved', CAST(N'2023-04-21T10:27:03.500' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (333, 25, N'GL Closure', N'IC approved', CAST(N'2023-04-21T14:34:07.313' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (334, 25, N'GL Closure', N'Closure completed', CAST(N'2023-04-21T14:34:33.223' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (335, 1069, N'GL Creation', N'HOD Approved', CAST(N'2023-04-21T16:23:45.733' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (336, 1079, N'GL Creation', N'RO Approved', CAST(N'2023-04-25T10:46:07.200' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (337, 1079, N'GL Creation', N'RO Approved', CAST(N'2023-04-25T11:05:41.797' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (338, 1079, N'GL Creation', N'RO Approved', CAST(N'2023-04-25T11:20:15.577' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (339, 1079, N'GL Creation', N'HOD Approved', CAST(N'2023-04-25T12:08:28.913' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (340, 1079, N'GL Creation', N'HOD Approved', CAST(N'2023-04-25T12:13:26.820' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (341, 1079, N'GL Creation', N'HOD Approved', CAST(N'2023-04-25T14:22:03.600' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (342, 1079, N'GL Creation', N'HOD Approved', CAST(N'2023-04-25T14:44:54.250' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (343, 1079, N'GL Creation', N'HOD Approved', CAST(N'2023-04-25T14:53:38.217' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (344, 1079, N'GL Creation', N'IC Approved', CAST(N'2023-04-25T15:12:08.193' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (345, 1079, N'GL Creation', N'IC Approved', CAST(N'2023-04-25T15:59:18.037' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (346, 1079, N'GL Creation', N'Account Number Updated', CAST(N'2023-04-25T16:02:42.200' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (347, 1080, N'GL Creation', N'RO Approved', CAST(N'2023-04-28T12:31:35.270' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (348, 1080, N'GL Creation', N'HOD Approved', CAST(N'2023-04-28T12:40:07.287' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (349, 1080, N'GL Creation', N'IC Approved', CAST(N'2023-04-28T14:41:04.827' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (350, 1081, N'GL Creation', N'RO Approved', CAST(N'2023-05-02T12:59:18.377' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (351, 1081, N'GL Creation', N'HOD Approved', CAST(N'2023-05-02T13:05:32.980' AS DateTime), 2)
+GO
+INSERT [dbo].[IssueLogger] ([Id], [RequestId], [RequestType], [Action], [LogDate], [User]) VALUES (352, 1081, N'GL Creation', N'HOD Approved', CAST(N'2023-05-02T15:30:58.330' AS DateTime), 2)
+GO
+SET IDENTITY_INSERT [dbo].[IssueLogger] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Menu] ON 
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1, N'Dashboard', N'portal', N'dashboard', 0, NULL, 1, N'ri-dashboard-line me-2')
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (2, N'GL Creation', N'portal', NULL, 0, NULL, 2, N'ri-apps-2-line mr-2')
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3, N'GL Requests', N'portal', N'glcreationrequest', 2, NULL, 1, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (4, N'RO/VC Approval', N'portal', N'glpendingrequest', 2, NULL, 4, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (5, N'GL Closure', N'portal', NULL, 0, NULL, 3, N'ri-pencil-ruler-2-line')
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1002, N'Branch/HOD Approval', N'portal', N'glhodapproval', 2, NULL, 3, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1003, N'GLC Approval', N'portal', N'glicreview', 2, NULL, 5, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1005, N'Finance Approval', N'portal', N'glfinanceapprove', 2, NULL, 6, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1006, N'Account Update', N'portal', N'glaccountupdate', 2, NULL, 7, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1007, N'Requests', N'portal', N'glclosurerequest', 5, NULL, 1, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1008, N'Reports', N'portal', NULL, 0, NULL, 4, N'ri-table-2')
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1009, N'All Creation Requests', N'portal', N'glcreationreport', 1008, NULL, 1, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1010, N'All Closure Requests', N'portal', N'glclosurereport', 1008, NULL, 2, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1011, N'GL Proofing', N'portal', NULL, 0, NULL, 5, N'ri-profile-line')
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (1012, N'Reports', N'portal', N'glproofrequest', 1011, NULL, 1, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (2011, N'Pending Report', N'portal', N'glproofpending', 1011, NULL, 2, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3012, N'BRANCH/HOD Approval', N'portal', N'glclosurehodpending', 5, NULL, 3, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3014, N'GLC Approval', N'portal', N'glclosureicapproval', 5, NULL, 5, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3015, N'RO/VC/HC Approval', N'portal', N'glclosurepending', 5, NULL, 4, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3016, N'Update Account Closure', N'portal', N'glclosureupdate', 5, NULL, 6, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3017, N'GL Rejected', N'portal', N'gldeclinedrequest', 2, NULL, 2, NULL)
+GO
+INSERT [dbo].[Menu] ([Id], [MenuName], [Controller], [Action], [MainMenuId], [RoleId], [MenuPosition], [FontStyle]) VALUES (3018, N'Closure Rejected', N'portal', N'gldeclinedclosure', 5, NULL, 2, NULL)
+GO
+SET IDENTITY_INSERT [dbo].[Menu] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ReconciliationFrequency] ON 
+GO
+INSERT [dbo].[ReconciliationFrequency] ([Id], [ReconFrequencyName]) VALUES (1, N'Daily')
+GO
+INSERT [dbo].[ReconciliationFrequency] ([Id], [ReconFrequencyName]) VALUES (2, N'Monthly')
+GO
+INSERT [dbo].[ReconciliationFrequency] ([Id], [ReconFrequencyName]) VALUES (3, N'Other')
+GO
+SET IDENTITY_INSERT [dbo].[ReconciliationFrequency] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ReconciliationType] ON 
+GO
+INSERT [dbo].[ReconciliationType] ([Id], [ReconciliationTypeName]) VALUES (1, N'Settlement Postings')
+GO
+INSERT [dbo].[ReconciliationType] ([Id], [ReconciliationTypeName]) VALUES (2, N'Agree to other systems')
+GO
+INSERT [dbo].[ReconciliationType] ([Id], [ReconciliationTypeName]) VALUES (3, N'Self Recon')
+GO
+INSERT [dbo].[ReconciliationType] ([Id], [ReconciliationTypeName]) VALUES (4, N'Other')
+GO
+SET IDENTITY_INSERT [dbo].[ReconciliationType] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ReportStatus] ON 
+GO
+INSERT [dbo].[ReportStatus] ([Id], [StatusName]) VALUES (1, N'Draft')
+GO
+INSERT [dbo].[ReportStatus] ([Id], [StatusName]) VALUES (2, N'Pending')
+GO
+INSERT [dbo].[ReportStatus] ([Id], [StatusName]) VALUES (3, N'Reviewed')
+GO
+INSERT [dbo].[ReportStatus] ([Id], [StatusName]) VALUES (4, N'Rejected')
+GO
+INSERT [dbo].[ReportStatus] ([Id], [StatusName]) VALUES (5, N'Amended')
+GO
+SET IDENTITY_INSERT [dbo].[ReportStatus] OFF
+GO
+SET IDENTITY_INSERT [dbo].[RequestStatus] ON 
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (1, N'Draft Request')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (2, N'Pending BRANCH/HOD Approval')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (3, N'Pending RO/VC/HC Approval')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (4, N'Pending GLC Approval')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (5, N'HOD/BRANCH Rejected')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (6, N'RO/VC Approved')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (7, N'Pending Finance Approval')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (8, N'Pending Account Update')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (9, N'Finance Rejected')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (10, N'Completed')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (13, N'RO/VC/HC Rejected')
+GO
+INSERT [dbo].[RequestStatus] ([Id], [StatusName]) VALUES (14, N'GLC Rejected')
+GO
+SET IDENTITY_INSERT [dbo].[RequestStatus] OFF
+GO
+SET IDENTITY_INSERT [dbo].[RoleMenu] ON 
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1, 1)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 2, 2)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3, 3)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 4, 4)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 5, 5)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1002, 1002)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1003, 1003)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1005, 1005)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1006, 1006)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1007, 1007)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1008, 1008)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1009, 1009)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1010, 1010)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1011, 1011)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 1012, 1012)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 2011, 2011)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3012, 3012)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3014, 3014)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3015, 3015)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3016, 3016)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3017, 3017)
+GO
+INSERT [dbo].[RoleMenu] ([RoleId], [MenuId], [Id]) VALUES (2, 3018, 3018)
+GO
+SET IDENTITY_INSERT [dbo].[RoleMenu] OFF
+GO
+ALTER TABLE [dbo].[GLReport]  WITH CHECK ADD  CONSTRAINT [FK_GLReport_ReportStatus] FOREIGN KEY([ReportStatus])
+REFERENCES [dbo].[ReportStatus] ([Id])
+GO
+ALTER TABLE [dbo].[GLReport] CHECK CONSTRAINT [FK_GLReport_ReportStatus]
+GO
+ALTER TABLE [dbo].[GLRequest]  WITH CHECK ADD  CONSTRAINT [FK_glRequest_GLClosingBalType] FOREIGN KEY([GLExpectedClosingBalType])
+REFERENCES [dbo].[GLClosingBalType] ([Id])
+GO
+ALTER TABLE [dbo].[GLRequest] CHECK CONSTRAINT [FK_glRequest_GLClosingBalType]
+GO
+ALTER TABLE [dbo].[GLRequest]  WITH CHECK ADD  CONSTRAINT [FK_glRequest_GlEtryType] FOREIGN KEY([GLEntryType])
+REFERENCES [dbo].[GLEtryType] ([Id])
+GO
+ALTER TABLE [dbo].[GLRequest] CHECK CONSTRAINT [FK_glRequest_GlEtryType]
+GO
+ALTER TABLE [dbo].[GLRequest]  WITH CHECK ADD  CONSTRAINT [FK_glRequest_GlType] FOREIGN KEY([GLTypeId])
+REFERENCES [dbo].[GLType] ([Id])
+GO
+ALTER TABLE [dbo].[GLRequest] CHECK CONSTRAINT [FK_glRequest_GlType]
+GO
+ALTER TABLE [dbo].[GLRequest]  WITH CHECK ADD  CONSTRAINT [FK_GLRequest_ReconciliationFrequency] FOREIGN KEY([ReconFreqId])
+REFERENCES [dbo].[ReconciliationFrequency] ([Id])
+GO
+ALTER TABLE [dbo].[GLRequest] CHECK CONSTRAINT [FK_GLRequest_ReconciliationFrequency]
+GO
+ALTER TABLE [dbo].[GLRequest]  WITH CHECK ADD  CONSTRAINT [FK_GLRequest_ReconciliationType] FOREIGN KEY([ReconTypeId])
+REFERENCES [dbo].[ReconciliationType] ([Id])
+GO
+ALTER TABLE [dbo].[GLRequest] CHECK CONSTRAINT [FK_GLRequest_ReconciliationType]
+GO
+ALTER TABLE [dbo].[RoleMenu]  WITH CHECK ADD  CONSTRAINT [FK_RoleMenu_Menu] FOREIGN KEY([MenuId])
+REFERENCES [dbo].[Menu] ([Id])
+GO
+ALTER TABLE [dbo].[RoleMenu] CHECK CONSTRAINT [FK_RoleMenu_Menu]
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLClosureRequestReport]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLClosureRequestReport]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.AccountOwner,r.AccountOwnerMail,r.AccountOwnerTitle,r.HodMail,r.GLAccountNumber,r.ClosureReason,
+	
+	r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequesterBranch,r.RequestStatus reqStatus,s.StatusName RequestStatus,
+	r.Id RequestId,
+	br.BranchName RequestBranchName,br.[Type] BranchTypeId,
+	isnull(convert(varchar,r.AuthoriseDate,0),'N/A') AuthDate,
+	isnull(hodu.[Name],'N/A') HODApprover,
+	isnull(convert(varchar,r.ICApproveDate,0),'N/A') ICApproveDate,
+	r.ICApproveComments,isnull(icau.[Name],'N/A') ICApproveUser
+
+	from dbo.[GLClosureRequest] r
+	inner join [dbo].[RequestStatus] s on s.Id = r.RequestStatus
+	inner join dbo.Branch br on br.Id = r.RequesterBranch
+	left join dbo.[User] u on u.UserID = r.AuthoriserId
+	left join dbo.[User] hodu on hodu.UserID = r.AuthoriserId
+	left join dbo.[User] icau on icau.UserID = r.ICApproveUser
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLClosureRequests]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLClosureRequests]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.GLAccountNumber,r.ClosureReason,r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequesterBranch,r.RequestStatus reqStatus,s.StatusName RequestStatus,
+	r.HodMail,r.RequestAttachment,r.AccountOwner,r.AccountOwnerMail,r.AccountOwnerTitle,
+	r.Id RequestId,u.[Name] RequesterName, r.RequesterId, br.BranchName
+
+	from dbo.[GLClosureRequest] r
+	inner join dbo.[User] u on u.UserID = r.RequesterId
+	inner join [dbo].[RequestStatus] s on s.Id = r.RequestStatus
+	inner join dbo.Branch br on br.Id = r.RequesterBranch
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLClosureRequestsForUpdate]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[getAllGLClosureRequestsForUpdate]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.GLAccountNumber,r.ClosureReason,r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequesterBranch,r.RequestStatus reqStatus,s.StatusName RequestStatus,
+	r.HodMail,r.RequestAttachment,r.AccountOwner,r.AccountOwnerMail,r.AccountOwnerTitle,
+	r.Id RequestId,u.[Name] RequesterName, r.RequesterId, br.BranchName
+
+	from dbo.[GLClosureRequest] r
+	inner join dbo.[User] u on u.UserID = r.RequesterId
+	inner join [dbo].[RequestStatus] s on s.Id = r.RequestStatus
+	inner join dbo.Branch br on br.Id = r.RequesterBranch
+	where r.RequestStatus = 4 or r.RequestStatus = 8
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLCreationRequestReport]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLCreationRequestReport]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.AccountOwnerName,r.ReconOfficer,r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequestBranch,r.Status reqStatus,s.StatusName RequestStatus,
+	cb.ClosinBalType,et.EntryTypeName,t.GLTypeName,
+	r.GLEntryType,r.GLTypeId,r.GLExpectedClosingBalType,r.Id RequestId,
+	r.RequestBranch RequestBranchId,br.BranchName RequestBranchName,br.[Type] BranchTypeId,
+	rf.ReconFrequencyName,rt.ReconciliationTypeName, isnull(convert(varchar,r.AuthoriseDate,0),'N/A') ROAuthDate,isnull(u.[Name],'N/A') ROAuthoriser,
+	isnull(convert(varchar,r.HODApprovalDate,0),'N/A') HODApprovalDate,isnull(hodu.[Name],'N/A') HODApprover,isnull(convert(varchar,r.ICReviewDate,0),'N/A') ICReviewDate,
+	isnull(icu.[Name],'N/A') ICReviewUser,r.ICReviewComments,isnull(convert(varchar,r.ICRejectDate,0),'N/A') ICRejectDate,isnull(icu2.[Name],'N/A') ICRejectUser,isnull(convert(varchar,r.ICApproveDate,0),'N/A') ICApproveDate,
+	r.ICApproveComments,isnull(icau.[Name],'N/A') ICApproveUser,isnull(convert(varchar,r.FinanceApproveDate,0),'N/A') FinanceApproveDate,isnull(fau.[Name],'N/A') FinanceApproveUser,
+	r.FinanceApproveComment,isnull(convert(varchar,r.FinanceRejectDate,0),'N/A') FinanceRejectDate,isnull(fru.[Name],'N/A') FinanceRejectUser,r.FinanceRejectComment,isnull(r.AccountNumber,'N/A') AccountNumber,
+	isnull(convert(varchar,r.AccountNoUpdateDate,0),'N/A') AccountNoUpdateDate,isnull(auu.[Name],'N/A') AccountNoUpdateUser
+
+	from dbo.[GLRequest] r
+	inner join dbo.GLClosingBalType cb on cb.Id = r.GLExpectedClosingBalType
+	inner join dbo.GLEtryType et on et.Id = r.GLEntryType
+	inner join dbo.GLType t on t.Id  = r.GLTypeId
+	inner join [dbo].[RequestStatus] s on s.Id = r.Status
+	inner join dbo.Branch br on br.Id = r.RequestBranch
+	inner join dbo.ReconciliationFrequency rf on rf.Id = r.ReconFreqId
+	inner join [dbo].[ReconciliationType] rt on rt.Id = r.ReconTypeId
+	left join dbo.[User] u on u.UserID = r.AuthoriserId
+	left join dbo.[User] hodu on hodu.UserID = r.HODApprovalUser
+	left join dbo.[User] icu on icu.UserID = r.ICReviewUser
+	left join dbo.[User] icu2 on icu2.UserID = r.ICRejectUser
+	left join dbo.[User] icau on icau.UserID = r.ICApproveUser
+	left join dbo.[User] fau on fau.UserID = r.FinanceApproveUser
+	left join dbo.[User] fru on fru.UserID = r.FinanceRejectUser
+	left join dbo.[User] auu on auu.UserID = r.AccountNoUpdateUser
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLreports]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLreports]
+	
+AS
+BEGIN
+	
+	Select r.Id ReportId, r.[Subject] ReportSubject,r.Contact,
+	cast(r.SubmissionDate as date) SubmissionDate, convert(varchar,r.SubmissionDate,0) SubmissionDateF,
+	cast(r.ProofDate as date) ProofDate,FORMAT (r.ProofDate, 'MMM dd yyyy') ProofDateF,
+	r.ReportAttachment,r.ReportBranch,r.Reporter ReporterId,r.ReportStatus,
+	s.StatusName ReportStatusName,br.BranchName ReportBranchName,br.[Type] BranchTypeId,
+	u.[Name] Reporter, ur.[Name] Reviewer,convert(varchar,r.ReviewDate,0) ReviewDateF,r.ReviewDate,r.ReviewComments,
+	r.ReviewAction,ua.[Name] AmendUser,r.AmendDate,convert(varchar,r.AmendDate,0) AmendDateF,r.AmendAction,
+	r.LateSubmission
+	from dbo.[GLReport] r	
+	inner join [dbo].[ReportStatus] s on s.Id = r.ReportStatus
+	inner join dbo.Branch br on br.Id = r.ReportBranch
+	left join dbo.[User] u on u.UserID = r.Reporter
+	left join dbo.[User] ur on ur.UserID = r.Reviewer
+	left join dbo.[User] ua on ua.UserID = r.AmendUser
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLrequests]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLrequests]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.AccountOwnerName,r.ReconOfficer,r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequestBranch,r.Status reqStatus,s.StatusName RequestStatus,
+	cb.ClosinBalType,et.EntryTypeName,t.GLTypeName,
+	r.GLEntryType,r.GLTypeId,r.GLExpectedClosingBalType,r.Id RequestId,
+	r.RequestBranch RequestBranchId,br.BranchName RequestBranchName,br.[Type] BranchTypeId,
+	r.IsTellerCashAccount
+
+	from dbo.[GLRequest] r
+	inner join dbo.GLClosingBalType cb on cb.Id = r.GLExpectedClosingBalType
+	inner join dbo.GLEtryType et on et.Id = r.GLEntryType
+	inner join dbo.GLType t on t.Id  = r.GLTypeId
+	inner join [dbo].[RequestStatus] s on s.Id = r.Status
+	inner join dbo.Branch br on br.Id = r.RequestBranch
+
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllGLrequestsForAccountUpdate]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllGLrequestsForAccountUpdate]
+	
+AS
+BEGIN
+	
+	Select r.GLAccountName,r.AccountOwnerName,r.ReconOfficer,r.HodName,cast(r.RequestDate as date) RequestDate, convert(varchar,r.RequestDate,0) RequestDateF,
+	r.RequestBranch,r.Status reqStatus,s.StatusName RequestStatus,
+	cb.ClosinBalType,et.EntryTypeName,t.GLTypeName,
+	r.GLEntryType,r.GLTypeId,r.GLExpectedClosingBalType,r.Id RequestId,
+	r.RequestBranch RequestBranchId,br.BranchName RequestBranchName,br.[Type] BranchTypeId,
+	r.IsTellerCashAccount
+
+	from dbo.[GLRequest] r
+	inner join dbo.GLClosingBalType cb on cb.Id = r.GLExpectedClosingBalType
+	inner join dbo.GLEtryType et on et.Id = r.GLEntryType
+	inner join dbo.GLType t on t.Id  = r.GLTypeId
+	inner join [dbo].[RequestStatus] s on s.Id = r.Status
+	inner join dbo.Branch br on br.Id = r.RequestBranch
+
+	where (r.Status = 8) or (r.Status = 7 and r.IsTellerCashAccount = 1) or (r.Status = 7 and r.IsTellerCashAccount = 3)
+
+END
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[getAllTest]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllTest] 
+	-- Add the parameters for the stored procedure here
+	
+AS
+BEGIN
+	Select [GLAccountName],[GLPurpose] from [dbo].[GLRequest]
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getBranchRequestStat]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[getBranchRequestStat]
+AS
+
+  select b.BranchName, count(1) [Requested],
+       SUM(CASE WHEN status = 10 THEN 1 else 0 END) [Created]
+  From GLRequest r
+  inner join dbo.Branch b on b.Id = r.RequestBranch
+  where b.[Type] = 1
+  group by b.BranchName
+GO
+/****** Object:  StoredProcedure [dbo].[getDashboardSummary]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+CREATE Procedure [dbo].[getDashboardSummary]
+AS
+
+
+declare @totCreationRequest int
+declare @totCreated int
+
+declare @totClosureRequest int
+declare @totClosed int
+
+
+select @totCreationRequest =  count(Id) from dbo.GLRequest
+select @totCreated =  count(Id) from dbo.GLRequest where [Status] = 10
+
+select @totClosureRequest =  count(Id) from dbo.GLClosureRequest
+select @totClosed =  count(Id) from dbo.GLClosureRequest where RequestStatus = 10
+
+
+select @totCreationRequest totCreationRequest, @totCreated totCreated, @totClosureRequest totClosureRequest, @totClosed totClosed
+		
+GO
+/****** Object:  StoredProcedure [dbo].[getNonBranchRequestStat]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[getNonBranchRequestStat]
+AS
+
+  select b.BranchName, count(1) [Requested],
+       SUM(CASE WHEN status = 10 THEN 1 else 0 END) [Created]
+  From GLRequest r
+  inner join dbo.Branch b on b.Id = r.RequestBranch
+  where b.[Type] <> 1
+  group by b.BranchName
+GO
+/****** Object:  StoredProcedure [dbo].[getRequestSummaryNonBranch]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+Create Procedure [dbo].[getRequestSummaryNonBranch]
+AS
+
+
+declare @totRequestToday int
+declare @totCreatedToday int
+declare @totPendingToday int
+
+declare @totRequestWeek int
+declare @totCreatedWeek int
+declare @totPendingWeek int
+
+declare @totRequestMonth int
+declare @totCreatedMonth int
+declare @totPendingMonth int
+
+--================Day's request
+select @totRequestToday =  count(Id) from dbo.GLRequest where cast(RequestDate as date)= cast(getdate() as date)
+select @totCreatedToday =  count(Id) from dbo.GLRequest where cast(RequestDate as date)= cast(getdate() as date) and [Status] = 10
+select @totPendingToday =  count(Id) from dbo.GLRequest where cast(RequestDate as date)= cast(getdate() as date) and [Status] <> 10
+
+--================Week's request
+select @totRequestWeek = count(Id) from dbo.GLRequest Where RequestDate BETWEEN DATEADD(DAY, -7, GETDATE()) AND DATEADD(DAY, 1, GETDATE())
+select @totCreatedWeek = count(Id) from dbo.GLRequest Where RequestDate BETWEEN DATEADD(DAY, -7, GETDATE()) AND DATEADD(DAY, 1, GETDATE()) and [Status] = 10
+select @totPendingWeek = count(Id) from dbo.GLRequest Where RequestDate BETWEEN DATEADD(DAY, -7, GETDATE()) AND DATEADD(DAY, 1, GETDATE()) and [Status] <> 10
+
+--================Month's request
+select @totRequestMonth = count(Id) from dbo.GLRequest Where MONTH(RequestDate) = MONTH(getdate()) AND YEAR(RequestDate) = YEAR(getdate())
+select @totCreatedMonth = count(Id) from dbo.GLRequest Where MONTH(RequestDate) = MONTH(getdate()) AND YEAR(RequestDate) = YEAR(getdate()) and [Status] = 10
+select @totPendingMonth = count(Id) from dbo.GLRequest Where MONTH(RequestDate) = MONTH(getdate()) AND YEAR(RequestDate) = YEAR(getdate()) and [Status] <> 10
+
+
+select @totRequestToday totRequestToday, @totCreatedToday totCreatedToday, @totPendingToday totPendingToday, @totRequestWeek totRequestWeek,
+		@totCreatedWeek totCreatedWeek, @totPendingWeek totPendingWeek, @totRequestMonth totRequestMonth, @totCreatedMonth totCreatedMonth, @totPendingMonth totPendingMonth
+
+
+
+
+
+
+
+--Where WorkDate BETWEEN DATEADD(DAY, -7, GETDATE()) AND DATEADD(DAY, 1, GETDATE())
+GO
+/****** Object:  StoredProcedure [dbo].[getUserMenuItems]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getUserMenuItems] 
+	@userid int
+AS
+BEGIN
+	Select distinct m.Id,m.MenuName,m.Controller,m.[Action],m.MainMenuId, m.MenuPosition,m.FontStyle
+	from dbo.UserRole ur
+	inner join dbo.RoleMenu rm on rm.RoleId = ur.RoleId
+	inner join dbo.Menu m on m.Id = rm.MenuId
+
+	where ur.UserId=@userid
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLClosingBalanceType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GLClosingBalanceType] 
+	
+AS
+BEGIN
+	Select distinct cb.Id, cb.ClosinBalType
+
+	from dbo.[GLRequest] r
+	inner join dbo.GLClosingBalType cb on cb.Id = r.GLExpectedClosingBalType
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLClosureRequestSource]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GLClosureRequestSource] 
+	@sourceid int
+AS
+BEGIN
+	Select distinct r.RequesterBranch Id,b.BranchName RequestSource
+
+	from dbo.[GLClosureRequest] r
+	inner join [dbo].[Branch] b on b.Id = r.[RequesterBranch]
+	
+	where b.[Type] = @sourceid and r.[RequestStatus] in (6)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLClosureRequestStatusType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GLClosureRequestStatusType] 
+	
+AS
+BEGIN
+	Select distinct r.RequestStatus Id,
+	s.StatusName ReqStatus
+	--case r.RequestStatus when 1 then 'Draft' when 2 then 'Submitted' else 'Unknown' end as 'ReqStatus'
+
+	from dbo.[GLClosureRequest] r
+	inner join [dbo].[RequestStatus] s on s.Id = r.[RequestStatus]
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLReportStatusType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GLReportStatusType] 
+	
+AS
+BEGIN
+	Select distinct r.ReportStatus Id,s.StatusName RepStatus
+
+	from dbo.[GLReport] r
+	inner join [dbo].[ReportStatus] s on s.Id = r.[ReportStatus]
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLRequestEntryType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE procedure [dbo].[GLRequestEntryType]
+AS
+Begin
+	Select distinct et.Id, et.EntryTypeName
+
+	from dbo.[GLRequest] r
+	inner join dbo.GLEtryType et on et.Id = r.GLEntryType
+End
+GO
+/****** Object:  StoredProcedure [dbo].[GLRequestSource]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GLRequestSource] 
+	@sourceid int
+AS
+BEGIN
+	Select distinct r.RequestBranch Id,b.BranchName RequestSource
+
+	from dbo.[GLRequest] r
+	inner join [dbo].[Branch] b on b.Id = r.[RequestBranch]
+	
+	where b.[Type] = @sourceid --and r.[Status] in (4,6)
+END
+GO
+/****** Object:  StoredProcedure [dbo].[glRequestStatusSummary]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[glRequestStatusSummary]
+as
+	select count(r.RequestBranch) cnt, b.BranchName,s.StatusName
+
+	from GLRequest r
+	inner join Branch b on b.Id = r.RequestBranch
+	inner join RequestStatus s on s.Id = r.[Status]
+	group by BranchName,StatusName
+	order by BranchName
+GO
+/****** Object:  StoredProcedure [dbo].[GLRequestStatusType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[GLRequestStatusType] 
+	
+AS
+BEGIN
+	Select distinct r.Status Id,s.StatusName ReqStatus
+
+	from dbo.[GLRequest] r
+	inner join [dbo].[RequestStatus] s on s.Id = r.[Status]
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GLRequestType]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE procedure [dbo].[GLRequestType]
+AS
+Begin
+	Select distinct t.Id, t.GLTypeName
+	from dbo.[GLRequest] r
+	inner join dbo.GLType t on t.Id  = r.GLTypeId
+End
+GO
+/****** Object:  StoredProcedure [dbo].[LogTrans]    Script Date: 5/12/2023 11:24:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[LogTrans] 
+	-- Add the parameters for the stored procedure here
+	@RequestId int,@RequestType nvarchar(50),@Action nvarchar(500),@LogDate datetime, @user int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	Insert into [IssueLogger] ([RequestId],[RequestType],[Action],[LogDate],[User]) values (@RequestId,@RequestType,@Action,@LogDate,@user)
+END
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'1-Draft, 2-Submitted' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GLClosureRequest', @level2type=N'COLUMN',@level2name=N'RequestStatus'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'1-Draft, 2-Request Submitted, 3-Request Authorised' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GLRequest', @level2type=N'COLUMN',@level2name=N'Status'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
+Begin DesignProperties = 
+   Begin PaneConfigurations = 
+      Begin PaneConfiguration = 0
+         NumPanes = 4
+         Configuration = "(H (1[40] 4[20] 2[20] 3) )"
+      End
+      Begin PaneConfiguration = 1
+         NumPanes = 3
+         Configuration = "(H (1 [50] 4 [25] 3))"
+      End
+      Begin PaneConfiguration = 2
+         NumPanes = 3
+         Configuration = "(H (1 [50] 2 [25] 3))"
+      End
+      Begin PaneConfiguration = 3
+         NumPanes = 3
+         Configuration = "(H (4 [30] 2 [40] 3))"
+      End
+      Begin PaneConfiguration = 4
+         NumPanes = 2
+         Configuration = "(H (1 [56] 3))"
+      End
+      Begin PaneConfiguration = 5
+         NumPanes = 2
+         Configuration = "(H (2 [66] 3))"
+      End
+      Begin PaneConfiguration = 6
+         NumPanes = 2
+         Configuration = "(H (4 [50] 3))"
+      End
+      Begin PaneConfiguration = 7
+         NumPanes = 1
+         Configuration = "(V (3))"
+      End
+      Begin PaneConfiguration = 8
+         NumPanes = 3
+         Configuration = "(H (1[56] 4[18] 2) )"
+      End
+      Begin PaneConfiguration = 9
+         NumPanes = 2
+         Configuration = "(H (1 [75] 4))"
+      End
+      Begin PaneConfiguration = 10
+         NumPanes = 2
+         Configuration = "(H (1[66] 2) )"
+      End
+      Begin PaneConfiguration = 11
+         NumPanes = 2
+         Configuration = "(H (4 [60] 2))"
+      End
+      Begin PaneConfiguration = 12
+         NumPanes = 1
+         Configuration = "(H (1) )"
+      End
+      Begin PaneConfiguration = 13
+         NumPanes = 1
+         Configuration = "(V (4))"
+      End
+      Begin PaneConfiguration = 14
+         NumPanes = 1
+         Configuration = "(V (2))"
+      End
+      ActivePaneConfig = 0
+   End
+   Begin DiagramPane = 
+      Begin Origin = 
+         Top = -144
+         Left = 0
+      End
+      Begin Tables = 
+         Begin Table = "u"
+            Begin Extent = 
+               Top = 9
+               Left = 57
+               Bottom = 206
+               Right = 349
+            End
+            DisplayFlags = 280
+            TopColumn = 5
+         End
+         Begin Table = "b"
+            Begin Extent = 
+               Top = 207
+               Left = 57
+               Bottom = 404
+               Right = 340
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+      End
+   End
+   Begin SQLPane = 
+   End
+   Begin DataPane = 
+      Begin ParameterDefaults = ""
+      End
+   End
+   Begin CriteriaPane = 
+      Begin ColumnWidths = 11
+         Column = 1440
+         Alias = 1550
+         Table = 1170
+         Output = 720
+         Append = 1400
+         NewValue = 1170
+         SortType = 1350
+         SortOrder = 1410
+         GroupBy = 1350
+         Filter = 1350
+         Or = 1350
+         Or = 1350
+         Or = 1350
+      End
+   End
+End
+' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'User'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPaneCount', @value=1 , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'User'
+GO

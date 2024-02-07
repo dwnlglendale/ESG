@@ -1,0 +1,222 @@
+﻿@model BranchDetails
+
+@{
+    ViewData["Title"] = "Footprint Details";
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Footprint Details</h1>
+        </div>
+        <div class="d-flex align-items-center gap-2 gap-lg-3">
+        </div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card">
+            <div class="mb-8">
+            </div>
+            <div class="card-body pt-0">
+                <form method="post">
+                    <fieldset disabled>
+                        <div class="row">
+                            <div class="p-4">
+                                <h1 class="p-2">Branch Information</h1>
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="PermanentStaffNumber">Number of Permanent Staff<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="PermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                            </div>
+
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="NonPermanentStaffNumber">Number of Non Permanent Staff<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="NonPermanentStaffNumber" required placeholder="Enter number of non permanent staff">
+                            </div>
+                             <div class="col form-group p-4">
+                                <fieldset disabled>
+                                <label class="form-label" asp-for="BranchName">Branch Name</label>
+                                <input type="text" class="form-control" asp-for="BranchName" >
+                                </fieldset>
+                            </div>
+                            <div class="row">
+                                <div class="p-4">
+                                    <h1 class="p-2">Electricity</h1>
+                                </div>
+                                <div class="col form-group p-4">
+                                    <label class="form-label" asp-for="ElectricityConsumed">Electricity Consumed (IN KwH)<span class="text-danger"> *</span></label>
+                                    <input type="number" class="form-control" asp-for="ElectricityConsumed" required step="0.01" min="0" placeholder="Enter amount consumed">
+                                </div>
+                                <div class="col form-group p-4">
+                                    <label class="form-label" asp-for="ElectricityAmount">Amount Paid(GHS)<span class="text-danger"> *</span></label>
+                                    <input type="number" class="form-control" asp-for="ElectricityAmount" required step="0.01" min="0" placeholder="Enter amount paid">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class=row>
+                            <div class="col-6 form-group p-4">
+                                <label class="form-label" asp-for="MeterType">Meter Type</label>
+                                <select class="form-control" asp-for="MeterType">
+                                    <option value="">--- Select from the options below ---</option>
+                                    <option value="Postpaid">Postpaid</option>
+                                    <option value="PrePaid">Prepaid</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h1 class="p-2">Fuel Consumption - Generator/Plant</h1>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="AmountPaidForDieselGenerator">Amount Paid for Diesel To Power Generator/Plant<span class="text-danger"> *</span></label>
+                                <input type="number" class="required form-control muted" asp-for="AmountPaidForDieselGenerator" required step="0.01" min="0" placeholder="Enter amount paid for diesel">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="QuantityOfDieselPurchased">Quantity of Diesel Bought/Supplied (Litres)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfDieselPurchased" required step="0.01" min="0" placeholder="Enter quantity of diesel purchased">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label for="electricityConsumed" asp-for="QuantityOfDieselConsumed">Total Quantity of Diesel Consumed (In Litres)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfDieselConsumed" required step="0.01" min="0" placeholder="Enter quantity of diesel consumed">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="QuantityOfDieselLeft">Quantity of Diesel Left (Litres) As At Month Ending<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfDieselLeft" required step="0.01" min="0" placeholder="Enter quantity of diesel left">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 form-group p-4">
+                                <label class="form-label" asp-for="TotalRuningGeneratorHours">Total Running Hours Of The Generator/Plant<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="TotalRuningGeneratorHours" required placeholder="Enter number of non permanent staff">
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <h1 class="p-2">Water (Drinkable/Regular)</h1>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="QuantityOfDrinkableWaterConsumed">Quantity of Water Consumed in Litres (Drinkable)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter means of disposal">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="QuantityOfRegularWaterConsumed">Quantity of Water Consumed in Litres (Regular)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid">
+                            </div>
+                        </div>
+                        <div class=row>
+                            <div class="col-6 form-group p-4">
+                                <label class="form-label" asp-for="CostOfDrinkableWaterConsumed">Amount Paid For Water Consumed (Drinkable) <span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="CostOfDrinkableWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for drinkable water" />
+                            </div>
+                            <div class="col-6 form-group p-4">
+                                <label class="form-label" asp-for="CostOfRegularWaterConsumed">Amount Paid For Water Consumed (Regular) <span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="CostOfRegularWaterConsumed" required step="0.01" min="0" placeholder="Enter amount paid for regular water" />
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h1 class="p-2">Paper Consumption</h1>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="NumberOfPaperUsed">Number of Papers Used (In Reams)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="NumberOfPaperUsed" required placeholder="Enter reams of paper used">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="CostOfPaperUsed">Cost of Paper Used<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="CostOfPaperUsed" required step="0.01" min="0" placeholder="Enter amount paid">
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h1 class="p-2">Waste (Trash)</h1>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="MeansOfDisposal">Means of Waste Disposal<span class="text-danger"> *</span></label>
+                                <input type="text" class="form-control" asp-for="MeansOfDisposal" required placeholder="Enter means of disposal">
+                            </div>
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="CostOfDisposal">Amount Paid to Waste Company<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="CostOfDisposal" required step="0.01" min="0" placeholder="Enter amount paid to waste company">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group p-4">
+                                <label class="form-label" asp-for="QuantityOfDisposal">Quantity of Waste Created and Disposed (in KG)<span class="text-danger"> *</span></label>
+                                <input type="number" class="form-control" asp-for="QuantityOfDisposal" required step="0.01" min="0" placeholder="Enter quantity of waste">
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    <div class="p-2">
+                        <h1>Comments</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col form-group p-4">
+                            <textarea class="form-control" asp-for="Comment" required step="0.01" min="0" placeholder="Add Comments here..."></textarea>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-6">
+                        <label asp-for="DocumentsPath" class="form-control-label"><b>Attached Files</b> <i rel='tooltip' data-toggle='tooltip' data-placement='bottom' title='Click on each file to download' class="ti-info-alt"></i></label>
+                        <div class="form-control" id="uploadImageDiv">
+                            @{
+                                if (!string.IsNullOrEmpty(Model.DocumentsPath))
+                                {
+                                    var documents = Model.DocumentsPath.Split("##uploads/receipts/");
+                                    var index = 1;
+                                    foreach (var document in documents)
+                                    {
+                                        if (document != "")
+                                        {
+                                            <br />
+                                            <a href='#' rel='tooltip' data-download-id='@document' class='' data-toggle='tooltip' data-placement='bottom' title='Download File'>(@index). @document <i class='ti-download'></i></a>
+                                            index++;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <p>No files attached.</p>
+                                }
+                            }
+                        </div>
+                    </div>
+
+
+                    <br />
+                    <br />
+                    <br />
+                    <div align="right">
+                        <a class="btn btn-dark" onclick="window.history.back()">Cancel</a>
+                        <a class="btn btn-success p-4" asp-controller="Footprint" asp-action="StatusChange" asp-route-id="@Model.CarbornFootprint" asp-route-status="accept">Accept</a>
+                        <button type="submit" class="btn btn-danger p-4" asp-controller="Footprint" asp-action="StatusChange" asp-route-id="@Model.CarbornFootprint" asp-route-status="return">Return</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+@section scripts
+{
+<script src="~/js/download_files.js"></script>
+
+}
+
+<script type="text/javascript">
+    function goBack() {
+  window.history.go(-1);
+}
+</script>
